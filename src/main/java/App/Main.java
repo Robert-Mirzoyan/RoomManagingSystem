@@ -1,0 +1,357 @@
+package App;
+
+import Service.*;
+import Model.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        RoomService roomService = new RoomService();
+        BookingService bookingService = new BookingService();
+        ReportService reportService = new ReportService(bookingService);
+
+        // Users
+        Student student = new Student(1, "Robert", "robert_mirzoyan@edu.aua.am");
+        Student student2 = new Student(2, "Ruben", "ruben@edu.aua.am");
+        FacultyManager manager = new FacultyManager(3, "SKachat", "skachat@aua.am");
+        Admin admin = new Admin(4,"Artur","artur@gmail.com");
+
+        // Rooms
+        roomService.addRoom("Room A", "Lab", 20, admin);
+        roomService.addRoom("Room B", "Auditorium", 30, admin);
+
+        // For testing
+        // 2025/06/01 12:30-2025/06/01 14:00
+
+        while (true){
+            System.out.println("to log in as student 1 enter 1\nto log in as student 2 enter 2\nto log in as manager enter 3\nto log in as admin enter 4\nto exit enter 0");
+            Scanner scanner = new Scanner(System.in);
+            int input = scanner.nextInt();
+            if (input == 0){
+                break;
+            }
+            else if (input == 1){
+                studentAccount(student, bookingService, roomService);
+            }
+            else if (input == 2){
+                studentAccount(student2, bookingService, roomService);
+            }
+            else if (input == 3){
+                managerAccount(manager, bookingService);
+            }
+            else if (input == 4){
+                adminAccount(admin, bookingService, roomService, reportService);
+            }
+        }
+    }
+    public static void studentAccount(Student student, BookingService bookingService, RoomService roomService){
+        System.out.println("Student account: " + student.getName() + ", " + student.getEmail());
+        while (true) {
+            System.out.println("\nto get your bookings enter 1\nto edit your booking enter 2\nto add booking enter 3\nto cancel booking enter 4\nto exit enter 0");
+            Scanner scanner = new Scanner(System.in);
+            int input = scanner.nextInt();
+            if (input == 0) {
+                break;
+            }
+            else if (input == 1){
+                List<Booking> bookings = bookingService.getBookingsByStudent(student);
+                if (bookings.isEmpty()){
+                    System.out.println("\nNo Bookings found for this student");
+                }
+                for (Booking booking : bookings){
+                    System.out.printf(
+                            "Booking ID: %d, Room: %s, Booking status: %s, Time Slot: %s - %s%n",
+                            booking.getId(),
+                            booking.getRoom().getName(),
+                            booking.getStatus(),
+                            booking.getTimeSlot().getStartTime(),
+                            booking.getTimeSlot().getEndTime()
+                    );
+                }
+            }
+            else if (input == 2){
+                System.out.println("Enter booking ID to edit");
+                int id;
+                try {
+                    id = scanner.nextInt();
+                } catch (Exception e) {
+                    System.out.println("Invalid id");
+                    continue;
+                }
+                System.out.println("Enter new time slot in \"yyyy/MM/dd HH:mm-yyyy/MM/dd HH:mm\" format");
+                String ignore = scanner.nextLine();
+                String newTimeSlot = scanner.nextLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+                // 2025/06/01 12:30-2025/06/01 14:00
+
+                String[] parts = newTimeSlot.split("-");
+
+                if (parts.length != 2) {
+                    System.out.println("Invalid time slot format");
+                }
+                try {
+                    TimeSlot slot = new TimeSlot(id, LocalDateTime.parse(parts[0], formatter), LocalDateTime.parse(parts[1], formatter));
+                    boolean result = bookingService.editBooking(id, slot, student);
+                    System.out.println(result ? "Booking edit requested" : "Booking edit request failed");
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid time slot format");
+                } catch (NullPointerException e) {
+                    System.out.println("Booking not found");
+                } catch (Exception e) {
+                    System.out.println("Unknown error occurred");
+                }
+            }
+            else if (input == 3){
+                List<Room> rooms = roomService.getAllRooms();
+
+                for (Room room : rooms){
+                    System.out.println(room.getName() + " (" + room.getType() + ", " + room.getCapacity() + " capacity), ID: " + room.getId());
+                }
+
+                System.out.println("Enter room id to add booking");
+                int id;
+                try {
+                    id = scanner.nextInt();
+                } catch (Exception e) {
+                    System.out.println("Invalid id");
+                    continue;
+                }
+                System.out.println("Enter time slot in \"yyyy/MM/dd HH:mm-yyyy/MM/dd HH:mm\" format");
+                String ignore = scanner.nextLine();
+                String newTimeSlot = scanner.nextLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+                // 2025/06/01 12:30-2025/06/01 14:00
+
+                String[] parts = newTimeSlot.split("-");
+
+                if (parts.length != 2) {
+                    System.out.println("Invalid time slot format");
+                    continue;
+                }
+                try {
+                    TimeSlot slot = new TimeSlot(0, LocalDateTime.parse(parts[0], formatter), LocalDateTime.parse(parts[1], formatter));
+                    boolean result = bookingService.requestBooking(roomService.getRoom(id), slot, student);
+                    System.out.println(result ? "Booking requested" : "Booking request failed");
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid time slot format");
+                } catch (NullPointerException e) {
+                    System.out.println("Booking not found");
+                } catch (Exception e) {
+                    System.out.println("Unknown error occurred");
+                }
+            }
+            else if (input == 4){
+                System.out.println("Enter booking ID to cancel");
+                int id = scanner.nextInt();
+                boolean result = bookingService.cancelBooking(id, student);
+                System.out.println(result ? "Booking cancelled" : "Booking not found" );
+            }
+            else {
+                System.out.println("Invalid input");
+            }
+        }
+    }
+    public static void managerAccount(FacultyManager manager, BookingService bookingService){
+        System.out.println("Manager account: " + manager.getName() + ", " + manager.getEmail());
+        while (true){
+            System.out.println("\nto get all bookings enter 1\nto approve booking enter 2\nto reject booking enter 3\nto filter bookings by room enter 4\nto filter bookings by requester enter 5\nto exit enter 0");
+            Scanner scanner = new Scanner(System.in);
+            int input = scanner.nextInt();
+            if (input == 0) {
+                break;
+            }
+            else if (input == 1){
+                List<Booking> bookings = bookingService.getAllBookings();
+                if (bookings.isEmpty()){
+                    System.out.println("No Bookings found for this student");
+                }
+                for (Booking booking : bookings){
+                    System.out.printf(
+                            "Booking ID: %d, Room: %s, Booking status: %s, Requester ID: %d, Time Slot: %s - %s%n",
+                            booking.getId(),
+                            booking.getRoom().getName(),
+                            booking.getStatus(),
+                            booking.getStudent().getId(),
+                            booking.getTimeSlot().getStartTime(),
+                            booking.getTimeSlot().getEndTime()
+                    );
+                }
+            }
+            else if (input == 2){
+                System.out.println("Enter booking ID to approve");
+                int id = scanner.nextInt();
+                boolean result = bookingService.approveBooking(id, manager);
+                System.out.println(result ? "Booking approved" : "Booking approval failed");
+            }
+            else if (input == 3){
+                System.out.println("Enter booking ID to reject");
+                int id = scanner.nextInt();
+                boolean result = bookingService.rejectBooking(id, manager);
+                System.out.println(result ? "Booking rejected" : "Booking rejection failed");
+            }
+            else if (input == 4){
+                System.out.println("Enter room id to filter by room");
+                int id = scanner.nextInt();
+                List<Booking> bookings = bookingService.filterBookings(id,null);
+                for (Booking booking : bookings){
+                    System.out.printf(
+                            "Booking ID: %d, Room: %s, Booking status: %s, Requester ID: %d, Time Slot: %s - %s%n",
+                            booking.getId(),
+                            booking.getRoom().getName(),
+                            booking.getStatus(),
+                            booking.getStudent().getId(),
+                            booking.getTimeSlot().getStartTime(),
+                            booking.getTimeSlot().getEndTime()
+                    );
+                }
+            }
+            else if (input == 5){
+                System.out.println("Enter room id to filter by room");
+                int id = scanner.nextInt();
+                List<Booking> bookings = bookingService.filterBookings(null,id);
+                for (Booking booking : bookings){
+                    System.out.printf(
+                            "Booking ID: %d, Room: %s (ID: %d), Booking status: %s, Requester ID: %d, Time Slot: %s - %s%n",
+                            booking.getId(),
+                            booking.getRoom().getName(),
+                            booking.getRoom().getId(),
+                            booking.getStatus(),
+                            booking.getStudent().getId(),
+                            booking.getTimeSlot().getStartTime(),
+                            booking.getTimeSlot().getEndTime()
+                    );
+                }
+            }
+        }
+    }
+    public static void adminAccount(Admin admin, BookingService bookingService, RoomService roomService, ReportService reportService){
+        System.out.println("Admin account: " + admin.getName() + ", " + admin.getEmail());
+        while (true){
+            System.out.println("\nto view all rooms enter 1\nto change room open/close time enter 2\nto add room enter 3\nto remove room enter 4\nto edit room info enter 5\nto generate usage statistics enter 6\nto exit enter 0");
+            Scanner scanner = new Scanner(System.in);
+            int input = scanner.nextInt();
+            if (input == 0) {
+                break;
+            }
+            else if (input == 1){
+                List<Room> rooms = roomService.getAllRooms();
+
+                for (Room room : rooms){
+                    System.out.println(room.getName() + " (" + room.getType() + ", " + room.getCapacity() + " capacity), ID: " + room.getId());
+                }
+                System.out.println("Opening time: " + bookingService.getOpenTime() + ", closing time: " + bookingService.getCloseTime());
+            }
+            else if (input == 2){
+                System.out.println("Enter new opening time in \"HH:mm\" format");
+                String ignore = scanner.nextLine();
+                String newOpenTime = scanner.nextLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                System.out.println("Enter new closing time in \"HH:mm\" format");
+                String newCloseTime = scanner.nextLine();
+                bookingService.setOpenTime(LocalTime.parse(newOpenTime, formatter));
+                bookingService.setCloseTime(LocalTime.parse(newCloseTime, formatter));
+                System.out.println("Opening time changed to " + bookingService.getOpenTime() + ", closing time changed to " + bookingService.getCloseTime());
+            }
+            else if (input == 3){
+                System.out.println("Enter new room name");
+                String ignore = scanner.nextLine();
+                String name = scanner.nextLine();
+                System.out.println("Enter new room type");
+                String type = scanner.nextLine();
+                System.out.println("Enter new room capacity");
+                int capacity = scanner.nextInt();
+                boolean result = roomService.addRoom(name, type, capacity, admin);
+                System.out.println(result ? "Room added" : "Adding room failed");
+            } else if (input == 4) {
+                System.out.println("Enter room id to remove");
+                int id = scanner.nextInt();
+                if (roomService.getRoom(id) == null) {
+                    System.out.println("Room not found");
+                    continue;
+                }
+                List<Booking> bookings = bookingService.filterBookings(id, null);
+                boolean canRemove = true;
+                for (Booking booking : bookings) {
+                    if (booking.getStatus() == Status.APPROVED){
+                        System.out.println("Booking ID: " + booking.getId() + ", Room: " + booking.getRoom().getName() + " is still approved, cannot remove");
+                        canRemove = false;
+                    }
+                }
+                if (canRemove) {
+                    boolean result = roomService.removeRoom(id);
+                    System.out.println(result ? "Room removed" : "Failed to remove room");
+                }
+            }
+            else if (input == 5){
+                System.out.println("Enter room id to edit");
+                int id;
+                try {
+                    id = scanner.nextInt();
+                } catch (Exception e) {
+                    System.out.println("Invalid id");
+                    continue;
+                }
+                Room room = roomService.getRoom(id);
+                if (room == null) {
+                    System.out.println("Room not found");
+                    continue;
+                }
+                System.out.println("Enter new name");
+                String ignore = scanner.nextLine();
+                String name = scanner.nextLine();
+                System.out.println("Enter new type");
+                String type = scanner.nextLine();
+                System.out.println("Enter new capacity");
+                int capacity = scanner.nextInt();
+                room.setName(name);
+                room.setType(type);
+                room.setCapacity(capacity);
+            } else if (input == 6) {
+                generateStatistics(reportService);
+            }
+        }
+    }
+    private static void generateStatistics(ReportService reportService){
+        while (true){
+            System.out.println("\nto generate top N most used rooms enter 1\nto generate room usage statistics for specific date enter 2\nto exit enter 0");
+            Scanner scanner = new Scanner(System.in);
+            int input = scanner.nextInt();
+            if (input == 0){
+                break;
+            }
+            else if (input == 1){
+                System.out.println("Enter number of rooms to generate statistics for");
+                int number = scanner.nextInt();
+                List<Room> rooms = reportService.mostBookedRooms(number);
+                System.out.println();
+                for (Room room : rooms){
+                    System.out.println(room.getName() + " (" + room.getType() + ", " + room.getCapacity() + " capacity), ID: " + room.getId());
+                }
+            }
+            else if (input == 2){
+                System.out.println("Enter date in \"yyyy/MM/dd\" format");
+                String ignore = scanner.nextLine();
+                String date = scanner.nextLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                List<Booking> bookings = reportService.roomUsageByDate(LocalDate.parse(date,formatter));
+                for (Booking booking : bookings){
+                    System.out.printf(
+                            "Booking ID: %d, Room: %s, Booking status: %s, Requester ID: %d, Time Slot: %s - %s%n",
+                            booking.getId(),
+                            booking.getRoom().getName(),
+                            booking.getStatus(),
+                            booking.getStudent().getId(),
+                            booking.getTimeSlot().getStartTime(),
+                            booking.getTimeSlot().getEndTime()
+                    );
+                }
+            }
+        }
+    }
+}

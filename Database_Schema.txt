@@ -1,0 +1,12 @@
+PK - primary key
+FK - foreign key
+
+user(id(PK),name,email,role)
+room(id(PK),name,type,capacity)
+timeslot(id(PK),start_time,end_time)
+booking(id(PK),user_id(FK),room_id(FK),timeslot_id(FK),status)
+
+one-to-one: booking and timeslot
+one-to-many: room and booking
+many-to-many: booking and user
+

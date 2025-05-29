@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,6 +20,11 @@ public class Main {
         // Users
         Student student = new Student(1, "Robert", "robert_mirzoyan@edu.aua.am");
         Student student2 = new Student(2, "Ruben", "ruben@edu.aua.am");
+        Student student3 = new Student(3, "Ashot", "ashot@edu.aua.am");
+        ArrayList<Student> students = new ArrayList<>();
+        students.add(student);
+        students.add(student2);
+        students.add(student3);
         FacultyManager manager = new FacultyManager(3, "SKachat", "skachat@aua.am");
         Admin admin = new Admin(4,"Artur","artur@gmail.com");
 
@@ -30,27 +36,30 @@ public class Main {
         // 2025/06/01 12:30-2025/06/01 14:00
 
         while (true){
-            System.out.println("to log in as student 1 enter 1\nto log in as student 2 enter 2\nto log in as manager enter 3\nto log in as admin enter 4\nto exit enter 0");
+            System.out.println("to log in as student 1 enter 1\nto log in as student 2 enter 2\nto log in as student 3 enter 3\nto log in as manager enter 4\nto log in as admin enter 5\nto exit enter 0");
             Scanner scanner = new Scanner(System.in);
             int input = scanner.nextInt();
             if (input == 0){
                 break;
             }
             else if (input == 1){
-                studentAccount(student, bookingService, roomService);
+                studentAccount(student, bookingService, roomService, students);
             }
             else if (input == 2){
-                studentAccount(student2, bookingService, roomService);
+                studentAccount(student2, bookingService, roomService, students);
             }
             else if (input == 3){
-                managerAccount(manager, bookingService);
+                studentAccount(student3, bookingService, roomService, students);
             }
             else if (input == 4){
+                managerAccount(manager, bookingService);
+            }
+            else if (input == 5){
                 adminAccount(admin, bookingService, roomService, reportService);
             }
         }
     }
-    public static void studentAccount(Student student, BookingService bookingService, RoomService roomService){
+    public static void studentAccount(Student student, BookingService bookingService, RoomService roomService, ArrayList<Student> students){
         System.out.println("Student account: " + student.getName() + ", " + student.getEmail());
         while (true) {
             System.out.println("\nto get your bookings enter 1\nto edit your booking enter 2\nto add booking enter 3\nto cancel booking enter 4\nto exit enter 0");
@@ -73,6 +82,7 @@ public class Main {
                             booking.getTimeSlot().getStartTime(),
                             booking.getTimeSlot().getEndTime()
                     );
+                    booking.getParticipants();
                 }
             }
             else if (input == 2){
@@ -97,7 +107,7 @@ public class Main {
                 }
                 try {
                     TimeSlot slot = new TimeSlot(id, LocalDateTime.parse(parts[0], formatter), LocalDateTime.parse(parts[1], formatter));
-                    boolean result = bookingService.editBooking(id, slot, student);
+                    boolean result = bookingService.editBooking(id, slot, student, students);
                     System.out.println(result ? "Booking edit requested" : "Booking edit request failed");
                 } catch (IllegalArgumentException e) {
                     System.out.println("Invalid time slot format");
@@ -136,7 +146,7 @@ public class Main {
                 }
                 try {
                     TimeSlot slot = new TimeSlot(0, LocalDateTime.parse(parts[0], formatter), LocalDateTime.parse(parts[1], formatter));
-                    boolean result = bookingService.requestBooking(roomService.getRoom(id), slot, student);
+                    boolean result = bookingService.requestBooking(roomService.getRoom(id), slot, student, students);
                     System.out.println(result ? "Booking requested" : "Booking request failed");
                 } catch (IllegalArgumentException e) {
                     System.out.println("Invalid time slot format");
@@ -181,6 +191,7 @@ public class Main {
                             booking.getTimeSlot().getStartTime(),
                             booking.getTimeSlot().getEndTime()
                     );
+                    booking.getParticipants();
                 }
             }
             else if (input == 2){
@@ -297,7 +308,7 @@ public class Main {
                     System.out.println("Invalid id");
                     continue;
                 }
-                Room room = roomService.getRoom(id);
+                Room room = roomService.getRoom(id);//need update this part
                 if (room == null) {
                     System.out.println("Room not found");
                     continue;
@@ -309,6 +320,8 @@ public class Main {
                 String type = scanner.nextLine();
                 System.out.println("Enter new capacity");
                 int capacity = scanner.nextInt();
+                // This part either
+//                roomService.updateRoom(id, name, type, capacity);
                 room.setName(name);
                 room.setType(type);
                 room.setCapacity(capacity);

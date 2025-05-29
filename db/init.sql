@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS booking_manager CASCADE;
+DROP TABLE IF EXISTS booking_participant CASCADE;
 DROP TABLE IF EXISTS booking CASCADE;
 DROP TABLE IF EXISTS timeslot CASCADE;
 DROP TABLE IF EXISTS room CASCADE;
@@ -38,7 +38,7 @@ CREATE TABLE booking (
 );
 
 -- Many-to-Many: Booking User
-CREATE TABLE booking_manager (
+CREATE TABLE booking_participant (
     booking_id INT,
     user_id INT,
     PRIMARY KEY (booking_id, user_id),

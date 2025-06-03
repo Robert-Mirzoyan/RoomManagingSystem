@@ -44,4 +44,12 @@ public class TimeSlot {
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TimeSlot that)) return false;
+        return startTime.withNano(0).equals(that.startTime.withNano(0)) &&
+                endTime.withNano(0).equals(that.endTime.withNano(0));
+    }
 }

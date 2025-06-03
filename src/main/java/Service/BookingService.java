@@ -1,7 +1,11 @@
 package Service;
 
+import DB.BookingDB;
+import DB.BookingParticipantDB;
+import DB.UserDB;
 import Model.*;
 
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -10,19 +14,21 @@ import static Model.Status.REJECTED;
 import static Model.Status.CANCELLED;
 
 public class BookingService {
-    private final Map<Integer, Booking> bookings = new HashMap<>();
-    private int nextBookingId = 1;
+    private final BookingDB bookingDB = new BookingDB();
+    private final BookingParticipantDB bookingParticipantDB = new BookingParticipantDB();
+    private final UserDB userDB = new UserDB();
+
     private LocalTime openTime = LocalTime.of(8, 0);
     private LocalTime closeTime = LocalTime.of(22, 0);
 
-    public boolean requestBooking(Room room, TimeSlot slot, Student student, List<Student> students) {
+    public boolean requestBooking(Room room, TimeSlot slot, Student student) {
 
-        if (isWithinAllowedHours(slot)) {
+        if (isNotWithinAllowedHours(slot)) {
             System.out.println("Booking must be between " + openTime + " and " + closeTime + "." );
             return false;
         }
 
-        for (Booking existing : bookings.values()) {
+        for (Booking existing : bookingDB.findAll()) {
             if (existing.getRoom().getId() == room.getId() &&
                     existing.getTimeSlot().overlaps(slot) &&
                     existing.getStatus() != REJECTED &&
@@ -37,151 +43,52 @@ public class BookingService {
             return false;
         }
 
-        nextBookingId++;
-        slot.setId(nextBookingId);
-        Booking booking = new Booking(nextBookingId, room, slot, student, PENDING);
+        Booking booking = new Booking(0, room, slot, student, PENDING);
 
-        System.out.println("List of students:");
-        for (Student currentStudent : students) {
-            if (currentStudent.getId() == student.getId()) continue;
-            System.out.println("ID: " + currentStudent.getId() +
-                    ", Name: " + currentStudent.getName() +
-                    ", Email: " + currentStudent.getEmail());
+        promptToAddParticipants(booking, student);
+
+        try {
+            bookingDB.save(booking);
+        } catch (SQLException e) {
+            System.out.println("Error saving booking: " + e.getMessage());
+            return false;
         }
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("To add participants enter their ids in the next line, to exit enter 0");
-        String participants = scanner.nextLine();
-
-        if (!participants.trim().equals("0")) {
-            String[] ids = participants.split(" ");
-            for (String idString : ids) {
-                try {
-                    int idInt = Integer.parseInt(idString);
-                    boolean studentAdded = false;
-                    for (Student currentStudent : students) {
-                        if (currentStudent.getId() == idInt) {
-                            studentAdded = true;
-                            booking.addParticipant(currentStudent);
-                            System.out.println("Added " + currentStudent.getName() + " to the booking.");
-                        }
-                    }
-                    if (!studentAdded) {
-                        System.out.println("Student with id " + idInt + " not found.");
-                    }
-                } catch (Exception e){
-                    System.out.println("Unknown error occurred");
-                }
-            }
-        }
-
-
-        bookings.put(booking.getId(), booking);
         return true;
     }
 
-    public boolean editBooking(int bookingId, TimeSlot newSlot, Student student, List<Student> students) {
-        if (!student.getEmail().equals(bookings.get(bookingId).getStudent().getEmail())) return false;
+    public boolean editBooking(int bookingId, TimeSlot newSlot, Student student) {
+        if (!student.getEmail().equals(bookingDB.findById(bookingId).getStudent().getEmail())) return false;
 
-        if (isWithinAllowedHours(newSlot)) {
+        if (isNotWithinAllowedHours(newSlot)) {
             System.out.println("Edited time must be between " + openTime + " and " + closeTime + ".");
             return false;
         }
 
-        Booking booking = bookings.get(bookingId);
+        Booking booking = bookingDB.findById(bookingId);
         if (booking == null || !booking.isEditable()) return false;
 
-        for (Booking existing : bookings.values()) {
+        for (Booking existing : bookingDB.findAll()) {
             if (existing.getId() != bookingId &&
+                    existing.getRoom().getId() == booking.getRoom().getId() &&
                     existing.getTimeSlot().overlaps(newSlot) &&
                     existing.getStatus() != Status.REJECTED &&
                     existing.getStatus() != Status.CANCELLED) {
+                System.out.println("Conflict with an existing booking.");
                 return false;
             }
         }
-        booking.setTimeSlot(newSlot);
-        booking.setStatus(PENDING);
 
-        Scanner scanner = new Scanner(System.in);
-        ArrayList<Student> participantsList = booking.getParticipants();
-        System.out.println("To remove participants enter their ids in the next line, to exit enter 0");
-        String participants = scanner.nextLine();
-
-        if (!participants.trim().equals("0")) {
-            String[] ids = participants.split(" ");
-            for (String idString : ids) {
-                try {
-                    int idInt = Integer.parseInt(idString);
-                    boolean studentAdded = false;
-
-                    if (idInt == student.getId()){
-                        studentAdded = true;
-                        System.out.println("You cannot remove requester from the booking.");
-                        continue;
-                    }
-
-                    Iterator<Student> iterator = participantsList.iterator();
-                    while (iterator.hasNext()) {
-                        Student currentStudent = iterator.next();
-                        if (currentStudent.getId() == idInt) {
-                            iterator.remove();
-                            System.out.println("Removed " + currentStudent.getName() + " from the booking.");
-                            studentAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (!studentAdded) {
-                        System.out.println("Student with id " + idInt + " not found.");
-                    }
-                } catch (Exception e){
-                    System.out.println(e);
-                    System.out.println("Unknown error occurred");
-                }
-            }
+        if (!booking.getTimeSlot().equals(newSlot)){
+            bookingDB.updateTimeSlot(booking, newSlot);
         }
+        bookingDB.updateStatus(booking,"PENDING");
 
-        System.out.println("List of students:");
-        for (Student currentStudent : students) {
-            if (currentStudent.getId() == student.getId()) continue;
-            System.out.println("ID: " + currentStudent.getId() +
-                    ", Name: " + currentStudent.getName() +
-                    ", Email: " + currentStudent.getEmail());
-        }
-        System.out.println("To add participants enter their ids in the next line, to exit enter 0");
-        participants = scanner.nextLine();
-
-        if (!participants.trim().equals("0")) {
-            String[] ids = participants.split(" ");
-            for (String idString : ids) {
-                try {
-                    int idInt = Integer.parseInt(idString);
-                    boolean studentAdded = false;
-                    for (Student currentStudent : students) {
-                        if (currentStudent.getId() == idInt) {
-                            if (participantsList.contains(currentStudent)){
-                                System.out.println(currentStudent.getName() + " is already in the booking.");
-                                studentAdded = true;
-                                continue;
-                            }
-                            studentAdded = true;
-                            booking.addParticipant(currentStudent);
-                            System.out.println("Added " + currentStudent.getName() + " to the booking.");
-                        }
-                    }
-                    if (!studentAdded) {
-                        System.out.println("Student with id " + idInt + " not found.");
-                    }
-                } catch (Exception e){
-                    System.out.println("Unknown error occurred");
-                }
-            }
-        }
-
-        bookings.put(bookingId, booking);
+        promptToRemoveParticipants(booking, student);
+        promptToAddParticipants(booking, student);
         return true;
     }
 
-    private boolean isWithinAllowedHours(TimeSlot slot) {
+    private boolean isNotWithinAllowedHours(TimeSlot slot) {
         LocalTime start = slot.getStartTime().toLocalTime();
         LocalTime end = slot.getEndTime().toLocalTime();
 
@@ -189,56 +96,152 @@ public class BookingService {
                 !slot.getStartTime().toLocalDate().equals(slot.getEndTime().toLocalDate());
     }
 
+    private void promptToAddParticipants(Booking booking, Student currentStudent) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\nWho would you like to add as participants?");
+        System.out.println("Here are the available students:");
+
+        System.out.printf("(You)ID: %d | Name: %s | Email: %s%n", booking.getStudent().getId(), booking.getStudent().getName(), booking.getStudent().getEmail());
+        for (User s : userDB.findAllStudents()) {
+            if (s.getId() != currentStudent.getId()) {
+                System.out.printf("     ID: %d | Name: %s | Email: %s%n", s.getId(), s.getName(), s.getEmail());
+            }
+        }
+
+        System.out.println("\nEnter the IDs of the students you want to add (separated by spaces), or enter 0 to skip:");
+        String input = scanner.nextLine().trim();
+
+        if (input.equals("0")) {
+            System.out.println("No participants were added.");
+            return;
+        }
+
+        String[] idStrings = input.split("\\s+");
+        for (String idText : idStrings) {
+            try {
+                int id = Integer.parseInt(idText);
+                if (id == currentStudent.getId()) {
+                    System.out.println("You can't add yourself as a participant.");
+                    continue;
+                }
+
+                Optional<User> match = userDB.findAllStudents().stream()
+                        .filter(s -> s.getId() == id)
+                        .findFirst();
+//                booking.setParticipants((ArrayList<Student>) bookingParticipantDB.findParticipantsByBookingId(booking.getId()));
+                if (match.isPresent()) {
+                    Student participant = (Student) match.get();
+                    if (bookingParticipantDB.findParticipantsByBookingId(booking.getId()).contains(participant)) {
+                        System.out.println(participant.getName() + " is already in the participant list.");
+                    } else {
+//                        booking.addParticipant(participant);
+                        bookingParticipantDB.addParticipantToBooking(booking.getId(), participant.getId());
+                        System.out.println("Added: " + participant.getName());
+                    }
+                } else {
+                    System.out.println("No student found with ID: " + id);
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("'" + idText + "' is not a valid number.");
+            }
+        }
+    }
+
+    private void promptToRemoveParticipants(Booking booking, Student currentStudent) {
+        List<Student> participants = bookingParticipantDB.findParticipantsByBookingId(booking.getId());
+        if (participants.isEmpty()) {
+            System.out.println("\nThere are no participants to remove.");
+            return;
+        }
+
+        System.out.println("\nHere are the current participants:");
+        System.out.printf("(You)ID: %d | Name: %s | Email: %s%n", booking.getStudent().getId(), booking.getStudent().getName(), booking.getStudent().getEmail());
+        for (Student s : participants) {
+            System.out.printf("     ID: %d | Name: %s | Email: %s%n", s.getId(), s.getName(), s.getEmail());
+        }
+
+        System.out.println("\nEnter the IDs of the participants you want to remove (separated by spaces), or enter 0 to skip:");
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine().trim();
+
+        if (input.equals("0")) {
+            System.out.println("No participants were removed.");
+            return;
+        }
+
+        String[] idStrings = input.split("\\s+");
+        for (String idText : idStrings) {
+            try {
+                int id = Integer.parseInt(idText);
+                if (id == currentStudent.getId()) {
+                    System.out.println("You can't remove yourself.");
+                    continue;
+                }
+
+                boolean removed = participants.stream().anyMatch(student -> student.getId() == id);
+
+                if (removed) {
+                    bookingParticipantDB.removeParticipantFromBooking(booking.getId(), id);
+                    System.out.println("Removed participant with ID: " + id);
+                } else {
+                    System.out.println("No participant found with ID: " + id);
+                }
+//                boolean removed = booking.getParticipants().removeIf(s -> s.getId() == id);
+//                if (removed) {
+//                    System.out.println("Removed participant with ID: " + id);
+//                } else {
+//                    System.out.println("No participant found with ID: " + id);
+//                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("'" + idText + "' is not a valid number.");
+            }
+        }
+    }
 
     public boolean cancelBooking(int bookingId, Student student) {
-        if (!student.getEmail().equals(bookings.get(bookingId).getStudent().getEmail())) return false;
+        if (!student.getEmail().equals(bookingDB.findById(bookingId).getStudent().getEmail())) return false;
 
-        Booking booking = bookings.get(bookingId);
+        Booking booking = bookingDB.findById(bookingId);
         if (booking == null) return false;
-        booking.cancel();
+        bookingDB.updateStatus(booking,"CANCELLED");
         return true;
     }
 
     public boolean approveBooking(int bookingId, FacultyManager manager) {
         if (!manager.getRole().equals("FacultyManager")) return false;
-        Booking booking = bookings.get(bookingId);
+
+        Booking booking = bookingDB.findById(bookingId);
         if (booking == null || booking.getStatus() != PENDING) return false;
-        booking.approve();
+        bookingDB.updateStatus(booking,"APPROVED");
         return true;
     }
 
     public boolean rejectBooking(int bookingId, FacultyManager manager) {
         if (!manager.getRole().equals("FacultyManager")) return false;
 
-        Booking booking = bookings.get(bookingId);
+        Booking booking = bookingDB.findById(bookingId);
         if (booking == null || booking.getStatus() != PENDING) return false;
-        booking.reject();
+        bookingDB.updateStatus(booking,"REJECTED");
         return true;
     }
 
-    public List<Booking> filterBookings(Integer roomId, Integer studentId) {
-        List<Booking> results = new ArrayList<>();
-        for (Booking booking : bookings.values()) {
-            boolean match = true;
-            if (roomId != null && booking.getRoom().getId() != roomId) match = false;
-            if (studentId != null && booking.getStudent().getId() != studentId) match = false;
-            if (match) results.add(booking);
-        }
-        return results;
+    public List<Booking> filterBookings(Integer roomId) {
+        return bookingDB.findByFilters(roomId);
     }
 
     public List<Booking> getAllBookings() {
-        return new ArrayList<>(bookings.values());
+        return bookingDB.findAll();
     }
 
-    public List<Booking> getBookingsByStudent(Student student){
-        List<Booking> result = new ArrayList<>();
-        for (Booking booking : bookings.values()){
-            if (booking.getStudent().getId() == student.getId()){
-                result.add(booking);
-            }
-        }
-        return result;
+    public List<Booking> getBookingsByStudent(int id){
+        return bookingDB.findByStudentId(id);
+    }
+
+    public List<Student> getParticipants(int bookingId) {
+        return bookingParticipantDB.findParticipantsByBookingId(bookingId);
     }
 
     public LocalTime getOpenTime() {

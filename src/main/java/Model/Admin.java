@@ -9,4 +9,9 @@ public class Admin extends User {
     public String getRole() {
         return "Admin";
     }
+
+    @Override
+    public String toString() {
+        return "Admin{id=" + getId() + ", name='" + getName() + "', email='" + getEmail() + "'}";
+    }
 }

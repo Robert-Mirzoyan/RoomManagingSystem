@@ -9,4 +9,9 @@ public class FacultyManager extends User {
     public String getRole() {
         return "FacultyManager";
     }
+
+    @Override
+    public String toString() {
+        return "FacultyManager{id=" + getId() + ", name='" + getName() + "', email='" + getEmail() + "'}";
+    }
 }

@@ -9,4 +9,9 @@ public class Student extends User {
     public String getRole() {
         return "Student";
     }
+
+    @Override
+    public String toString() {
+        return "Student{id=" + getId() + ", name='" + getName() + "', email='" + getEmail() + "'}";
+    }
 }

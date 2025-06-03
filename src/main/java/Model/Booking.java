@@ -58,16 +58,20 @@ public class Booking {
     }
 
     public ArrayList<Student> getParticipants() {
-        System.out.println("List of Participants:");
-        System.out.println("ID: " + this.student.getId() +
-                ", Name: " + this.student.getName() +
-                "(Requester), Email: " + this.student.getEmail());
-        for (Student participant : participants) {
-            System.out.println("ID: " + participant.getId() +
-                    ", Name: " + participant.getName() +
-                    ", Email: " + participant.getEmail());
-        }
+//        System.out.println("List of Participants:");
+//        System.out.println("ID: " + this.student.getId() +
+//                ", Name: " + this.student.getName() +
+//                "(Requester), Email: " + this.student.getEmail());
+//        for (Student participant : participants) {
+//            System.out.println("ID: " + participant.getId() +
+//                    ", Name: " + participant.getName() +
+//                    ", Email: " + participant.getEmail());
+//        }
         return participants;
+    }
+
+    public void setParticipants(ArrayList<Student> participants) {
+        this.participants = participants;
     }
 
     public int getId() {

@@ -103,7 +103,7 @@ public class BookingService {
         System.out.println("Here are the available students:");
 
         System.out.printf("(You)ID: %d | Name: %s | Email: %s%n", booking.getStudent().getId(), booking.getStudent().getName(), booking.getStudent().getEmail());
-        for (User s : userDB.findAllStudents()) {
+        for (Student s : userDB.findAllStudents()) {
             if (s.getId() != currentStudent.getId()) {
                 System.out.printf("     ID: %d | Name: %s | Email: %s%n", s.getId(), s.getName(), s.getEmail());
             }
@@ -126,12 +126,12 @@ public class BookingService {
                     continue;
                 }
 
-                Optional<User> match = userDB.findAllStudents().stream()
+                Optional<Student> match = userDB.findAllStudents().stream()
                         .filter(s -> s.getId() == id)
                         .findFirst();
 //                booking.setParticipants((ArrayList<Student>) bookingParticipantDB.findParticipantsByBookingId(booking.getId()));
                 if (match.isPresent()) {
-                    Student participant = (Student) match.get();
+                    Student participant = match.get();
                     if (bookingParticipantDB.findParticipantsByBookingId(booking.getId()).contains(participant)) {
                         System.out.println(participant.getName() + " is already in the participant list.");
                     } else {

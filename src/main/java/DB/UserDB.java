@@ -44,9 +44,11 @@ public class UserDB {
         }
     }
 
-    public List<User> findAllStudents() {
-        String query = "SELECT * FROM \"user\" WHERE role = Student";
-        return JdbcUtil.findMany(query, USER_MAPPER);
+    public List<Student> findAllStudents() {
+        String query = "SELECT * FROM \"user\" WHERE role = 'Student'";
+        return JdbcUtil.findMany(query, USER_MAPPER).stream()
+                .map(user -> (Student) user)
+                .toList();
     }
 
     public void save(User user) {

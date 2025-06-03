@@ -21,9 +21,9 @@ public class Main {
 
         UserDB userDB = new UserDB();
 
-        List<User> studentUsers = userDB.findAllStudents();
+        List<Student> studentUsers = userDB.findAllStudents();
         ArrayList<Student> students = (ArrayList<Student>) studentUsers.stream()
-                .map(u -> (Student) u)
+                .map(u -> u)
                 .collect(Collectors.toList());
 
 

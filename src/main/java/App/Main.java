@@ -3,6 +3,7 @@ package App;
 import Service.*;
 import Model.*;
 import DB.*;
+import Util.JdbcUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
+        JdbcUtil.init();
+
         RoomService roomService = new RoomService();
         BookingService bookingService = new BookingService();
         ReportService reportService = new ReportService(bookingService);

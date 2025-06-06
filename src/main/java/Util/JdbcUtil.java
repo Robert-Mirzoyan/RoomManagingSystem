@@ -1,5 +1,9 @@
 package Util;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +15,24 @@ public class JdbcUtil {
     private static final String USER = "rob";
     private static final String PASSWORD = "12345678";
 
+    private static DataSource dataSource;
+
+    public static void init() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/mydb");
+        config.setUsername("rob");
+        config.setPassword("12345678");
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(2);
+        config.setIdleTimeout(30000); // 30 sec
+        config.setConnectionTimeout(10000); // 10 sec
+        config.setLeakDetectionThreshold(3000); // Warn if connection held > 3 sec
+        dataSource = new HikariDataSource(config);
+    }
+
     public static void execute(String query, Object... args) {
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (//Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             for (int i = 0; i < args.length; i++) {
                 stmt.setObject(i + 1, args[i]);
@@ -24,7 +44,8 @@ public class JdbcUtil {
     }
 
     public static void execute(String query, Consumer<PreparedStatement> consumer) {
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (//Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             consumer.accept(stmt);
             stmt.executeUpdate();
@@ -37,7 +58,8 @@ public class JdbcUtil {
     //The second method (b) offers more flexibility by letting you manually set parameters with full control using a lambda function.
 
     public static <T> T findOne(String query, Function<ResultSet, T> mapper, Object... args) {
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (//Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             for (int i = 0; i < args.length; i++) {
                 stmt.setObject(i + 1, args[i]);
@@ -58,7 +80,8 @@ public class JdbcUtil {
 
     public static <T> List<T> findMany(String query, Function<ResultSet, T> mapper, Object... args) {
         List<T> results = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (//Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             for (int i = 0; i < args.length; i++) {
                 stmt.setObject(i + 1, args[i]);

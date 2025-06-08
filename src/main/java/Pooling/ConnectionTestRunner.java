@@ -25,9 +25,10 @@ public class ConnectionTestRunner {
                     stmt.execute("SELECT pg_sleep(3)");
                     stmt.close();
                     System.out.println(Thread.currentThread().getName() + " done");
-                    latch.countDown();
                 } catch (SQLException e) {
                     e.printStackTrace();
+                } finally {
+                    latch.countDown();
                 }
 
             }).start();

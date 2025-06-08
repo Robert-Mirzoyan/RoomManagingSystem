@@ -30,6 +30,12 @@ public class JdbcUtil {
         dataSource = new HikariDataSource(config);
     }
 
+    public static void close() {
+        if (dataSource != null) {
+            ((HikariDataSource) dataSource).close();
+        }
+    }
+
     public static void execute(String query, Object... args) {
         try (//Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              Connection conn = dataSource.getConnection();

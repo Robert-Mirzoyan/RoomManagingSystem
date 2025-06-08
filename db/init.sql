@@ -54,32 +54,32 @@ VALUES
     (201, 'Suren', 'skachat@aua.am', 'FacultyManager'),
     (301, 'Artur', 'artur@edu.aua.am', 'Admin');
 
-INSERT INTO room (id, name, type, capacity)
+INSERT INTO room (name, type, capacity)
 VALUES
-    (1, 'Room A', 'Lab', 20),
-    (2, 'Room B', 'Auditorium', 30);
+    ('Room A', 'Lab', 20),
+    ('Room B', 'Auditorium', 30);
 
-SELECT setval('room_id_seq', (SELECT MAX(id) FROM room));
+-- SELECT setval('room_id_seq', (SELECT MAX(id) FROM room));
 
-INSERT INTO timeslot (id, start_time, end_time)
+INSERT INTO timeslot (start_time, end_time)
 VALUES
-    (1, '2025-06-03 12:30', '2025-06-03 14:00'),
-    (2, '2025-06-02 12:30', '2025-06-02 14:00'),
-    (3, '2025-06-04 12:30', '2025-06-04 14:00'),
-    (4, '2025-06-01 12:30', '2025-06-01 14:00'),
-    (5, '2025-06-02 16:30', '2025-06-02 18:00');
+    ('2025-06-03 12:30', '2025-06-03 14:00'),
+    ('2025-06-02 12:30', '2025-06-02 14:00'),
+    ('2025-06-04 12:30', '2025-06-04 14:00'),
+    ('2025-06-01 12:30', '2025-06-01 14:00'),
+    ('2025-06-02 16:30', '2025-06-02 18:00');
 
-SELECT setval('timeslot_id_seq', (SELECT MAX(id) FROM timeslot));
+-- SELECT setval('timeslot_id_seq', (SELECT MAX(id) FROM timeslot));
 
-INSERT INTO booking (id, user_id, room_id, timeslot_id, status)
+INSERT INTO booking (user_id, room_id, timeslot_id, status)
 VALUES
-    (1, 101, 1, 1, 'PENDING'),
-    (2, 102, 1, 2, 'PENDING'),
-    (3, 101, 1, 3, 'PENDING'),
-    (4, 102, 2, 4, 'PENDING'),
-    (5, 101, 2, 5, 'PENDING');
+    (101, 1, 1, 'PENDING'),
+    (102, 1, 2, 'PENDING'),
+    (101, 1, 3, 'PENDING'),
+    (102, 2, 4, 'PENDING'),
+    (101, 2, 5, 'PENDING');
 
-SELECT setval('booking_id_seq', (SELECT MAX(id) FROM booking));
+-- SELECT setval('booking_id_seq', (SELECT MAX(id) FROM booking));
 
 INSERT INTO booking_participant (booking_id, user_id)
 VALUES

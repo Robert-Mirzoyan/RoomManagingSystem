@@ -10,7 +10,7 @@ import java.sql.Statement;
 import java.util.concurrent.CountDownLatch;
 
 public class HikariConnectionTestRunner {
-    public static void main(String[] args) throws InterruptedException, SQLException {
+    public static void main(String[] args) throws InterruptedException {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:postgresql://localhost:5432/mydb");
         config.setUsername("rob");

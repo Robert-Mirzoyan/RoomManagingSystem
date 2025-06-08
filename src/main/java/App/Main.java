@@ -49,6 +49,7 @@ public class Main {
             int input = scanner.nextInt();
             if (input == 0){
                 System.out.println("Exited the system. Goodbye!");
+                JdbcUtil.close();
                 break;
             }
             else if (input == 1){

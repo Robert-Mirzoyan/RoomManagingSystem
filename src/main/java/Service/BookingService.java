@@ -8,10 +8,7 @@ import Model.*;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.*;
-
-import static Model.Status.PENDING;
-import static Model.Status.REJECTED;
-import static Model.Status.CANCELLED;
+import static Model.Status.*;
 
 public class BookingService {
     private final BookingDB bookingDB = new BookingDB();
@@ -129,13 +126,11 @@ public class BookingService {
                 Optional<Student> match = userDB.findAllStudents().stream()
                         .filter(s -> s.getId() == id)
                         .findFirst();
-//                booking.setParticipants((ArrayList<Student>) bookingParticipantDB.findParticipantsByBookingId(booking.getId()));
                 if (match.isPresent()) {
                     Student participant = match.get();
                     if (bookingParticipantDB.findParticipantsByBookingId(booking.getId()).contains(participant)) {
                         System.out.println(participant.getName() + " is already in the participant list.");
                     } else {
-//                        booking.addParticipant(participant);
                         bookingParticipantDB.addParticipantToBooking(booking.getId(), participant.getId());
                         System.out.println("Added: " + participant.getName());
                     }
@@ -188,13 +183,6 @@ public class BookingService {
                 } else {
                     System.out.println("No participant found with ID: " + id);
                 }
-//                boolean removed = booking.getParticipants().removeIf(s -> s.getId() == id);
-//                if (removed) {
-//                    System.out.println("Removed participant with ID: " + id);
-//                } else {
-//                    System.out.println("No participant found with ID: " + id);
-//                }
-
             } catch (NumberFormatException e) {
                 System.out.println("'" + idText + "' is not a valid number.");
             }

@@ -46,9 +46,4 @@ public class RoomDB {
         String query = "UPDATE room SET name = ?, type = ?, capacity = ? WHERE id = ?";
         JdbcUtil.execute(query, room.getName(), room.getType(), room.getCapacity(), room.getId());
     }
-
-    public List<Room> findByTypeAndCapacity(String type, int minCapacity) {
-        String query = "SELECT * FROM room WHERE type = ? AND capacity >= ?";
-        return JdbcUtil.findMany(query, ROOM_MAPPER, type, minCapacity);
-    }
 }

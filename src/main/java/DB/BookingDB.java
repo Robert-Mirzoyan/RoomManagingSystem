@@ -49,6 +49,7 @@ public class BookingDB {
         return JdbcUtil.findMany(query, BOOKING_MAPPER);
     }
 
+    @SuppressWarnings("unused")
     public void deleteById(int id) {
         String query = "DELETE FROM booking WHERE id = ?";
         JdbcUtil.execute(query, id);
@@ -71,6 +72,7 @@ public class BookingDB {
         return JdbcUtil.findMany(query, BOOKING_MAPPER, roomId);
     }
 
+    @SuppressWarnings("unused")
     private List<Student> findParticipants(int bookingId) {
         return bookingParticipantDB.findParticipantsByBookingId(bookingId);
     }

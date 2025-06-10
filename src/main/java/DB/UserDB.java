@@ -51,6 +51,7 @@ public class UserDB {
                 .toList();
     }
 
+    @SuppressWarnings("unused")
     public void save(User user) {
         String query = "INSERT INTO \"user\" (name, email, role) VALUES (?, ?, ?)";
         JdbcUtil.execute(query, user.getName(), user.getEmail(), user.getRole());

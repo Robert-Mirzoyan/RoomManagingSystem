@@ -13,10 +13,6 @@ public class TimeSlot {
         this.endTime = endTime;
     }
 
-    public Duration duration() {
-        return Duration.between(startTime, endTime);
-    }
-
     public boolean overlaps(TimeSlot other) {
         return startTime.isBefore(other.endTime) && endTime.isAfter(other.startTime);
     }
@@ -37,10 +33,12 @@ public class TimeSlot {
         this.id = id;
     }
 
+    @SuppressWarnings("unused")
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
+    @SuppressWarnings("unused")
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }

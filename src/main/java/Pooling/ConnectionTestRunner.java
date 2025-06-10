@@ -26,11 +26,10 @@ public class ConnectionTestRunner {
                     stmt.close();
                     System.out.println(Thread.currentThread().getName() + " done");
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    System.out.println(Thread.currentThread().getName() + " failed");
                 } finally {
                     latch.countDown();
                 }
-
             }).start();
         }
 

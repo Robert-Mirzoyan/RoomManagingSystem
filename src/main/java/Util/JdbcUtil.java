@@ -3,7 +3,6 @@ package Util;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +14,13 @@ public class JdbcUtil {
     private static final String USER = "rob";
     private static final String PASSWORD = "12345678";
 
-    private static DataSource dataSource;
+    private static HikariDataSource dataSource;
 
     public static void init() {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://localhost:5432/mydb");
-        config.setUsername("rob");
-        config.setPassword("12345678");
+        config.setJdbcUrl(URL);
+        config.setUsername(USER);
+        config.setPassword(PASSWORD);
         config.setMaximumPoolSize(10);
         config.setMinimumIdle(2);
         config.setIdleTimeout(30000); // 30 sec
@@ -32,7 +31,7 @@ public class JdbcUtil {
 
     public static void close() {
         if (dataSource != null) {
-            ((HikariDataSource) dataSource).close();
+            dataSource.close();
         }
     }
 

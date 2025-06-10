@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -24,11 +23,7 @@ public class Main {
 
         UserDB userDB = new UserDB();
 
-        List<Student> studentUsers = userDB.findAllStudents();
-        ArrayList<Student> students = (ArrayList<Student>) studentUsers.stream()
-                .map(u -> u)
-                .collect(Collectors.toList());
-
+        ArrayList<Student> students = new ArrayList<>(userDB.findAllStudents());
 
         FacultyManager manager = (FacultyManager) userDB.findByEmail("skachat@aua.am").orElseThrow();
         Admin admin = (Admin) userDB.findByEmail("artur@edu.aua.am").orElseThrow();
@@ -53,16 +48,16 @@ public class Main {
                 break;
             }
             else if (input == 1){
-                studentAccount(students.get(0), bookingService, roomService, students, scanner);
+                studentAccount(students.getFirst(), bookingService, roomService, scanner);
             }
             else if (input == 2){
-                studentAccount(students.get(1), bookingService, roomService, students, scanner);
+                studentAccount(students.get(1), bookingService, roomService, scanner);
             }
             else if (input == 3){
-                studentAccount(students.get(2), bookingService, roomService, students, scanner);
+                studentAccount(students.get(2), bookingService, roomService, scanner);
             }
             else if (input == 4){
-                studentAccount(students.get(3), bookingService, roomService, students, scanner);
+                studentAccount(students.get(3), bookingService, roomService, scanner);
             }
             else if (input == 5){
                 managerAccount(manager, bookingService, scanner);
@@ -72,7 +67,7 @@ public class Main {
             }
         }
     }
-    public static void studentAccount(Student student, BookingService bookingService, RoomService roomService, ArrayList<Student> students, Scanner scanner){
+    public static void studentAccount(Student student, BookingService bookingService, RoomService roomService, Scanner scanner){
         System.out.println("Student account: " + student.getName() + ", " + student.getEmail());
         while (true) {
             System.out.println("\nto get your bookings enter 1\nto edit your booking enter 2\nto add booking enter 3\nto cancel booking enter 4\nto exit enter 0");

@@ -35,10 +35,6 @@ public class RoomService {
         return roomDB.findById(roomId);
     }
 
-    public List<Room> searchRooms(String type, int minCapacity) {
-        return roomDB.findByTypeAndCapacity(type, minCapacity);
-    }
-
     public List<Room> getAllRooms() {
         return roomDB.findAll();
     }

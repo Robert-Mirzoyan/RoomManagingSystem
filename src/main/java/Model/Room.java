@@ -39,6 +39,7 @@ public class Room {
         this.id = id;
     }
 
+    @SuppressWarnings("unused")
     public void setType(String type) {
         this.type = type;
     }
@@ -47,6 +48,7 @@ public class Room {
         this.name = name;
     }
 
+    @SuppressWarnings("unused")
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }

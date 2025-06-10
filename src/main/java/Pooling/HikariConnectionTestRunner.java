@@ -3,7 +3,6 @@ package Pooling;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,7 +17,7 @@ public class HikariConnectionTestRunner {
         config.setMaximumPoolSize(5);
         config.setConnectionTimeout(10000);
 
-        DataSource dataSource = new HikariDataSource(config);
+        HikariDataSource dataSource = new HikariDataSource(config);
 
         CountDownLatch latch = new CountDownLatch(5);
 
@@ -29,9 +28,10 @@ public class HikariConnectionTestRunner {
                 try (Connection conn = dataSource.getConnection();
                      Statement stmt = conn.createStatement()) {
                     stmt.execute("SELECT pg_sleep(3)");
+                    stmt.close();
                     System.out.println(Thread.currentThread().getName() + " done");
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    System.out.println(Thread.currentThread().getName() + " failed");
                 } finally {
                     latch.countDown();
                 }
@@ -43,6 +43,6 @@ public class HikariConnectionTestRunner {
 
         System.out.println("All threads finished in " + (end - start) / 1000.0 + " seconds.");
 
-        ((HikariDataSource) dataSource).close();
+        dataSource.close();
     }
 }

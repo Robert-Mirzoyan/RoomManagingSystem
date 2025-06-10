@@ -59,17 +59,14 @@ VALUES
     ('Room A', 'Lab', 20),
     ('Room B', 'Auditorium', 30);
 
--- SELECT setval('room_id_seq', (SELECT MAX(id) FROM room));
-
 INSERT INTO timeslot (start_time, end_time)
 VALUES
     ('2025-06-03 12:30', '2025-06-03 14:00'),
     ('2025-06-02 12:30', '2025-06-02 14:00'),
     ('2025-06-04 12:30', '2025-06-04 14:00'),
     ('2025-06-01 12:30', '2025-06-01 14:00'),
-    ('2025-06-02 16:30', '2025-06-02 18:00');
-
--- SELECT setval('timeslot_id_seq', (SELECT MAX(id) FROM timeslot));
+    ('2025-06-02 16:30', '2025-06-02 18:00'),
+    ('2025-06-07 16:30', '2025-06-07 18:00');
 
 INSERT INTO booking (user_id, room_id, timeslot_id, status)
 VALUES
@@ -78,8 +75,6 @@ VALUES
     (101, 1, 3, 'PENDING'),
     (102, 2, 4, 'PENDING'),
     (101, 2, 5, 'PENDING');
-
--- SELECT setval('booking_id_seq', (SELECT MAX(id) FROM booking));
 
 INSERT INTO booking_participant (booking_id, user_id)
 VALUES

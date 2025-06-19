@@ -1,4 +1,4 @@
-package Util;
+package com.example.project.Util;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

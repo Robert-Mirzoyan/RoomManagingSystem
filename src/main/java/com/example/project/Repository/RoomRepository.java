@@ -1,6 +1,6 @@
-package Repository;
+package com.example.project.Repository;
 
-import Model.Room;
+import com.example.project.Model.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package Model;
+package com.example.project.Model;
 
 import jakarta.persistence.*;
 
@@ -54,10 +54,12 @@ public abstract class User {
 
     public abstract String getRole();
 
+    @SuppressWarnings("unused")
     public Set<Booking> getBookings() {
         return bookings;
     }
 
+    @SuppressWarnings("unused")
     public void setBookings(Set<Booking> bookings) {
         this.bookings = bookings;
     }

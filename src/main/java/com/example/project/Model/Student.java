@@ -1,4 +1,4 @@
-package Model;
+package com.example.project.Model;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

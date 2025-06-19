@@ -1,7 +1,7 @@
-package DB;
+package com.example.project.DB;
 
-import Model.Student;
-import Util.JdbcUtil;
+import com.example.project.Model.Student;
+import com.example.project.Util.JdbcUtil;
 import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

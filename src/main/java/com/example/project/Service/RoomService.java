@@ -1,15 +1,13 @@
-package Service;
+package com.example.project.Service;
 
-import Repository.RoomRepository;
-import Model.Admin;
-import Model.Room;
+import com.example.project.Repository.RoomRepository;
+import com.example.project.Model.Room;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
 public class RoomService {
-//    private final RoomDB roomDB;
     private final RoomRepository roomRepository;
 
     @Autowired
@@ -17,28 +15,30 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
 
-    public boolean addRoom(String name, String type, int capacity, Admin admin) {
-        if (!admin.getRole().equals("Admin")){
-            return false;
-        }
+    public void addRoom(String name, String type, int capacity) {
         Room room = new Room(0, name, type, capacity);
         roomRepository.save(room);
-        return true;
     }
 
-    public boolean removeRoom(int roomId) {
+    public void removeRoom(int roomId) {
         Room room = roomRepository.findById(roomId).orElse(null);
-        if (room == null) return false;
+        if (room == null) {
+            System.out.println("Failed to remove room");
+            return;
+        }
         roomRepository.deleteById(roomId);
-        return true;
+        System.out.println("Room removed");
     }
 
-    public boolean updateRoom(int roomId, String name, String type, int capacity) {
+    public void updateRoom(int roomId, String name, String type, int capacity) {
         Room room = roomRepository.findById(roomId).orElse(null);
-        if (room == null) return false;
+        if (room == null) {
+            System.out.println("Room edit failed");
+            return;
+        }
         room.updateDetails(name, type, capacity);
         roomRepository.save(room);
-        return true;
+        System.out.println("Room edit completed");
     }
 
     public Room getRoom(int roomId) {

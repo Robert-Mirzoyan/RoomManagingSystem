@@ -1,8 +1,8 @@
-package DB;
+package com.example.project.DB;
 
-import Model.Booking;
-import Model.Status;
-import Util.JdbcUtil;
+import com.example.project.Model.Booking;
+import com.example.project.Model.Status;
+import com.example.project.Util.JdbcUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

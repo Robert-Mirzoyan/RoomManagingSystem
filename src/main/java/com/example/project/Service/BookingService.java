@@ -1,18 +1,17 @@
-package Service;
+package com.example.project.Service;
 
-import Repository.BookingRepository;
-import Repository.UserRepository;
-import Model.*;
+import com.example.project.Repository.BookingRepository;
+import com.example.project.Repository.UserRepository;
+import com.example.project.Model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
-import static Model.Status.*;
+import static com.example.project.Model.Status.*;
 
 @Service
 public class BookingService {
@@ -28,11 +27,16 @@ public class BookingService {
         this.userRepository = userRepository;
     }
 
-    public boolean requestBooking(Room room, LocalDateTime startTime, LocalDateTime endTime, Student student) {
+    public void requestBooking(Room room, LocalDateTime startTime, LocalDateTime endTime, Student student) {
+
+        if (room == null) {
+            System.out.println("Non existing room.\nBooking request failed");
+            return;
+        }
 
         if (isNotWithinAllowedHours(startTime, endTime)) {
-            System.out.println("Booking must be between " + openTime + " and " + closeTime + "." );
-            return false;
+            System.out.println("Booking must be between " + openTime + " and " + closeTime + ".\nBooking request failed");
+            return;
         }
 
         for (Booking existing : bookingRepository.findAll()) {
@@ -40,38 +44,30 @@ public class BookingService {
                     existing.overlaps(startTime, endTime) &&
                     existing.getStatus() != REJECTED &&
                     existing.getStatus() != CANCELLED) {
-                System.out.println("Conflict with an existing booking.");
-                return false;
+                System.out.println("Conflict with an existing booking.\nBooking request failed");
+                return;
             }
         }
 
-        if (room == null) {
-            System.out.println("Non existing room.");
-            return false;
-        }
-
         Booking booking = new Booking(0, room, startTime, endTime, student, PENDING);
-
-        promptToAddParticipants(booking, student);
-
+        promptToAddParticipants(booking, student.getId());
         bookingRepository.save(booking);
-        return true;
+        System.out.println("Booking requested");
     }
 
     @Transactional
-    public boolean editBooking(int bookingId, LocalDateTime startTime, LocalDateTime endTime, Student student) {
-        if (!student.getEmail().equals(Objects.requireNonNull(bookingRepository.findById(bookingId).orElse(null)).getStudent().getEmail())) {
-            System.out.println("Invalid student id.");
-            return false;
+    public void editBooking(int bookingId, LocalDateTime startTime, LocalDateTime endTime, int studentId) {
+        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+
+        if (booking == null || booking.getStudent().getId() != studentId || !booking.isEditable()) {
+            System.out.println("Invalid booking id.\nBooking edit request failed");
+            return;
         }
 
         if (isNotWithinAllowedHours(startTime, endTime)) {
-            System.out.println("Edited time must be between " + openTime + " and " + closeTime + ".");
-            return false;
+            System.out.println("Edited time must be between " + openTime + " and " + closeTime + ".\nBooking edit request failed");
+            return;
         }
-
-        Booking booking = bookingRepository.findById(bookingId).orElse(null);
-        if (booking == null || !booking.isEditable()) return false;
 
         for (Booking existing : bookingRepository.findAll()) {
             if (existing.getId() != bookingId &&
@@ -79,8 +75,8 @@ public class BookingService {
                     existing.overlaps(startTime, endTime) &&
                     existing.getStatus() != REJECTED &&
                     existing.getStatus() != CANCELLED) {
-                System.out.println("Conflict with an existing booking.");
-                return false;
+                System.out.println("Conflict with an existing booking.\nBooking edit request failed");
+                return;
             }
         }
 
@@ -89,10 +85,10 @@ public class BookingService {
         }
         bookingRepository.updateStatus(booking.getId(), PENDING);
 
-        promptToRemoveParticipants(booking, student);
-        promptToAddParticipants(booking, student);
+        promptToRemoveParticipants(booking, studentId);
+        promptToAddParticipants(booking, studentId);
         bookingRepository.save(booking);
-        return true;
+        System.out.println("Booking edit requested");
     }
 
     private boolean isNotWithinAllowedHours(LocalDateTime newStartTime, LocalDateTime newEndTime) {
@@ -103,15 +99,16 @@ public class BookingService {
                 !newStartTime.toLocalDate().equals(newEndTime.toLocalDate());
     }
 
-    private void promptToAddParticipants(Booking booking, Student currentStudent) {
+    private void promptToAddParticipants(Booking booking, int currentStudentId) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("\nWho would you like to add as participants?");
         System.out.println("Here are the available students:");
 
         System.out.printf("(You)ID: %d | Name: %s | Email: %s%n", booking.getStudent().getId(), booking.getStudent().getName(), booking.getStudent().getEmail());
-        for (User user : userRepository.findAll()) {
-            if (user.getId() != currentStudent.getId() && user.getRole().equals("Student")) {
+        List<User> users =  userRepository.findAll();
+        for (User user : users) {
+            if (user.getId() != currentStudentId && user.getRole().equals("Student")) {
                 System.out.printf("     ID: %d | Name: %s | Email: %s%n", user.getId(), user.getName(), user.getEmail());
             }
         }
@@ -130,12 +127,12 @@ public class BookingService {
         for (String idText : idStrings) {
             try {
                 int id = Integer.parseInt(idText);
-                if (id == currentStudent.getId()) {
+                if (id == currentStudentId) {
                     System.out.println("You can't add yourself as a participant.");
                     continue;
                 }
 
-                Optional<User> match = userRepository.findById(id);
+                Optional<User> match = users.stream().filter(u -> u.getId() == id).findFirst();
                 if (match.isPresent() && match.get() instanceof Student student) {
                     if (currentParticipants.contains(student)) {
                         System.out.println(student.getName() + " is already in the participant list.");
@@ -152,7 +149,7 @@ public class BookingService {
         }
     }
 
-    private void promptToRemoveParticipants(Booking booking, Student currentStudent) {
+    private void promptToRemoveParticipants(Booking booking, int currentStudentId) {
         Set<Student> participants = booking.getParticipants();
         if (participants.isEmpty()) {
             System.out.println("\nThere are no participants to remove.");
@@ -177,7 +174,7 @@ public class BookingService {
         for (String idText : idStrings) {
             try {
                 int id = Integer.parseInt(idText);
-                if (id == currentStudent.getId()) {
+                if (id == currentStudentId) {
                     System.out.println("You can't remove yourself.");
                     continue;
                 }
@@ -196,28 +193,30 @@ public class BookingService {
     }
 
     @Transactional
-    public boolean cancelBooking(int bookingId, Student student) {
-        if (!student.getEmail().equals(Objects.requireNonNull(bookingRepository.findById(bookingId).orElse(null)).getStudent().getEmail())) return false;
-
+    public void cancelBooking(int bookingId, Student student) {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
-        if (booking == null) return false;
-        bookingRepository.updateStatus(booking.getId(),CANCELLED);
-        return true;
+
+        if (booking != null && booking.getStudent().getId() == student.getId()) {
+            bookingRepository.updateStatus(booking.getId(),CANCELLED);
+            System.out.println("Booking with ID: " + bookingId + " has been cancelled.");
+        } else  {
+            System.out.println("Booking with ID: " + bookingId + " not found.");
+        }
     }
 
     @Transactional
-    public boolean approveBooking(int bookingId, FacultyManager manager) {
-        return updateBooking(bookingId, manager, APPROVED);
+    public void approveBooking(int bookingId) {
+        boolean result = updateBooking(bookingId, APPROVED);
+        System.out.println(result ? "Booking approved" : "Booking approval failed");
     }
 
     @Transactional
-    public boolean rejectBooking(int bookingId, FacultyManager manager) {
-        return updateBooking(bookingId, manager, REJECTED);
+    public void rejectBooking(int bookingId) {
+        boolean result =  updateBooking(bookingId, REJECTED);
+        System.out.println(result ? "Booking rejected" : "Booking rejection failed");
     }
 
-    private boolean updateBooking(int bookingId, FacultyManager manager, Status status) {
-        if (!manager.getRole().equals("FacultyManager")) return false;
-
+    private boolean updateBooking(int bookingId, Status status) {
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
         if (booking == null || booking.getStatus() != PENDING) return false;
         bookingRepository.updateStatus(booking.getId(), status);
@@ -234,10 +233,6 @@ public class BookingService {
 
     public List<Booking> getBookingsByStudent(int id){
         return bookingRepository.findByStudentId(id);
-    }
-
-    public List<Student> getParticipants(int bookingId) {
-        return bookingRepository.findById(bookingId).map(booking -> new ArrayList<>(booking.getParticipants())).orElse(new ArrayList<>());
     }
 
     public LocalTime getOpenTime() {

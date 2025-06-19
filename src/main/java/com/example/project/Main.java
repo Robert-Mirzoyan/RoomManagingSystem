@@ -1,21 +1,17 @@
-package App;
+package com.example.project;
 
-import Repository.*;
-import Model.*;
-import Service.*;
+import com.example.project.Repository.*;
+import com.example.project.Model.*;
+import com.example.project.Service.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
-@SpringBootApplication(scanBasePackages = {"Service"})
-@EntityScan(basePackages = "Model")
-@EnableJpaRepositories("Repository")
+@SpringBootApplication()
 public class Main {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(Main.class, args);
@@ -91,7 +87,7 @@ public class Main {
                     );
                     System.out.println("Participants:");
                     System.out.printf("(You)ID: %d | Name: %s | Email: %s%n", booking.getStudent().getId(), booking.getStudent().getName(), booking.getStudent().getEmail());
-                    for (Student s : bookingService.getParticipants(booking.getId())) {
+                    for (Student s : booking.getParticipants()) {
                         System.out.printf("     ID: %d | Name: %s | Email: %s%n", s.getId(), s.getName(), s.getEmail());
                     }
                     System.out.println();
@@ -103,8 +99,7 @@ public class Main {
                 try {
                     id = scanner.nextInt();
                     List<LocalDateTime> times = readTimeSlotFromInput(scanner);
-                    boolean result = bookingService.editBooking(id, times.get(0), times.get(1), student);
-                    System.out.println(result ? "Booking edit requested" : "Booking edit request failed");
+                    bookingService.editBooking(id, times.get(0), times.get(1), student.getId());
                 } catch (IllegalArgumentException e) {
                     System.out.println("Invalid time slot format");
                 } catch (NullPointerException e) {
@@ -121,8 +116,7 @@ public class Main {
                 try {
                     id = scanner.nextInt();
                     List<LocalDateTime> times = readTimeSlotFromInput(scanner);
-                    boolean result = bookingService.requestBooking(roomService.getRoom(id), times.get(0), times.get(1), student);
-                    System.out.println(result ? "Booking requested" : "Booking request failed");
+                    bookingService.requestBooking(roomService.getRoom(id), times.get(0), times.get(1), student);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Invalid time slot format");
                 } catch (NullPointerException e) {
@@ -134,8 +128,7 @@ public class Main {
             else if (input == 4){
                 System.out.println("Enter booking ID to cancel");
                 int id = scanner.nextInt();
-                boolean result = bookingService.cancelBooking(id, student);
-                System.out.println(result ? "Booking cancelled" : "Booking not found" );
+                bookingService.cancelBooking(id, student);
             }
             else {
                 System.out.println("Invalid input");
@@ -186,14 +179,12 @@ public class Main {
             else if (input == 2){
                 System.out.println("Enter booking ID to approve");
                 int id = scanner.nextInt();
-                boolean result = bookingService.approveBooking(id, manager);
-                System.out.println(result ? "Booking approved" : "Booking approval failed");
+                bookingService.approveBooking(id);
             }
             else if (input == 3){
                 System.out.println("Enter booking ID to reject");
                 int id = scanner.nextInt();
-                boolean result = bookingService.rejectBooking(id, manager);
-                System.out.println(result ? "Booking rejected" : "Booking rejection failed");
+                bookingService.rejectBooking(id);
             }
             else if (input == 4){
                 System.out.println("Enter room id to filter by room");
@@ -266,8 +257,8 @@ public class Main {
                 String type = scanner.nextLine();
                 System.out.println("Enter new room capacity");
                 int capacity = scanner.nextInt();
-                boolean result = roomService.addRoom(name, type, capacity, admin);
-                System.out.println(result ? "Room added" : "Adding room failed");
+                roomService.addRoom(name, type, capacity);
+                System.out.println("Room added");
             } else if (input == 4) {
                 System.out.println("Enter room id to remove");
                 int id = scanner.nextInt();
@@ -284,8 +275,7 @@ public class Main {
                     }
                 }
                 if (canRemove) {
-                    boolean result = roomService.removeRoom(id);
-                    System.out.println(result ? "Room removed" : "Failed to remove room");
+                    roomService.removeRoom(id);
                 }
             }
             else if (input == 5){
@@ -309,8 +299,7 @@ public class Main {
                 String type = scanner.nextLine();
                 System.out.println("Enter new capacity");
                 int capacity = scanner.nextInt();
-                boolean result = roomService.updateRoom(id, name, type, capacity);
-                System.out.println(result ? "Room edit completed" : "Room edit failed");
+                roomService.updateRoom(id, name, type, capacity);
             } else if (input == 6) {
                 generateStatistics(reportService);
             }

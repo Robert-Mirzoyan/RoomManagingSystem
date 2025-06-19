@@ -11,9 +11,9 @@
 4||10|c|G
 4||10|C|G
 4||10|T|G</Grants>
-      <IntrospectionStateNumber>751</IntrospectionStateNumber>
+      <IntrospectionStateNumber>734</IntrospectionStateNumber>
       <ServerVersion>15.13</ServerVersion>
-      <StartupTime>1750256332</StartupTime>
+      <StartupTime>1750339467</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -1409,7 +1409,7 @@ true posixrules
 13209||10|C|G
 13209||-9223372036854775808|U|G
 13209||10|U|G</Grants>
-      <IntrospectionStateNumber>751</IntrospectionStateNumber>
+      <IntrospectionStateNumber>734</IntrospectionStateNumber>
       <ObjectId>16384</ObjectId>
       <OwnerName>rob</OwnerName>
     </database>
@@ -4827,8 +4827,8 @@ true posixrules
     <schema id="262" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>751</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-06-18.14:33:01</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>734</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-06-19.13:24:30</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>518</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -4851,7 +4851,7 @@ true posixrules
     </sequence>
     <table id="265" parent="262" name="booking">
       <ObjectId>16401</ObjectId>
-      <StateNumber>745</StateNumber>
+      <StateNumber>728</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>rob</OwnerName>
     </table>
@@ -4863,7 +4863,7 @@ true posixrules
     </table>
     <table id="267" parent="262" name="room">
       <ObjectId>16394</ObjectId>
-      <StateNumber>747</StateNumber>
+      <StateNumber>728</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>rob</OwnerName>
     </table>
@@ -4875,9 +4875,9 @@ true posixrules
     </table>
     <check id="269" parent="265" name="booking_status_check">
       <ColNames>status</ColNames>
-      <ObjectId>16438</ObjectId>
-      <Predicate>(status)::text = ANY (ARRAY[(&apos;PENDING&apos;::character varying)::text, (&apos;APPROVED&apos;::character varying)::text, (&apos;REJECTED&apos;::character varying)::text, (&apos;CANCELLED&apos;::character varying)::text])</Predicate>
-      <StateNumber>745</StateNumber>
+      <ObjectId>16405</ObjectId>
+      <Predicate>(status)::text = ANY ((ARRAY[&apos;PENDING&apos;::character varying, &apos;APPROVED&apos;::character varying, &apos;REJECTED&apos;::character varying, &apos;CANCELLED&apos;::character varying])::text[])</Predicate>
+      <StateNumber>728</StateNumber>
     </check>
     <check id="270" parent="265" name="booking_check">
       <ColNames>end_time
@@ -4926,8 +4926,8 @@ start_time</ColNames>
     <column id="276" parent="265" name="status">
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StateNumber>745</StateNumber>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StateNumber>728</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <foreign-key id="277" parent="265" name="booking_user_id_fkey">
@@ -5021,15 +5021,15 @@ user_id</ColNames>
     <column id="288" parent="267" name="name">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>746</StateNumber>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StateNumber>727</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="289" parent="267" name="type">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>747</StateNumber>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StateNumber>727</StateNumber>
+      <StoredType>varchar(100)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="290" parent="267" name="capacity">

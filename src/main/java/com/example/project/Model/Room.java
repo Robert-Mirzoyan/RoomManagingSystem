@@ -1,6 +1,8 @@
-package Model;
+package com.example.project.Model;
 
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "Room")
@@ -12,6 +14,9 @@ public class Room {
     private String name;
     private String type;
     private int capacity;
+
+    @OneToMany(mappedBy = "room",  cascade = CascadeType.ALL,  orphanRemoval = true,  fetch = FetchType.EAGER)
+    List<Booking> bookings;
 
     public Room(int id, String name, String type, int capacity) {
         this.id = id;
@@ -61,5 +66,14 @@ public class Room {
     @SuppressWarnings("unused")
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    @SuppressWarnings("unused")
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
     }
 }

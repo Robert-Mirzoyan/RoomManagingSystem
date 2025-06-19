@@ -1,10 +1,10 @@
-package DB;
+package com.example.project.DB;
 
-import Model.Admin;
-import Model.FacultyManager;
-import Model.Student;
-import Model.User;
-import Util.JdbcUtil;
+import com.example.project.Model.Admin;
+import com.example.project.Model.FacultyManager;
+import com.example.project.Model.Student;
+import com.example.project.Model.User;
+import com.example.project.Util.JdbcUtil;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;

@@ -1,4 +1,4 @@
-package Model;
+package com.example.project.Model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -87,9 +87,11 @@ public class Booking {
         this.room = room;
     }
 
+    @SuppressWarnings("unused")
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
+    @SuppressWarnings("unused")
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
@@ -108,6 +110,7 @@ public class Booking {
         return participants;
     }
 
+    @SuppressWarnings("unused")
     public void setParticipants(Set<Student> participants) {
         this.participants = participants;
     }

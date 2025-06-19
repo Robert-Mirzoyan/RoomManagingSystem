@@ -3,8 +3,17 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
+      <Grants>1||-9223372036854775808|c|G
+1||10|c|G
+1||10|C|G
+1||10|T|G
+4||-9223372036854775808|c|G
+4||10|c|G
+4||10|C|G
+4||10|T|G</Grants>
+      <IntrospectionStateNumber>735</IntrospectionStateNumber>
       <ServerVersion>15.13</ServerVersion>
-      <StartupTime>1750256332</StartupTime>
+      <StartupTime>1750339467</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -1405,6 +1414,7 @@ true posixrules
 13209||10|C|G
 13209||-9223372036854775808|U|G
 13209||10|U|G</Grants>
+      <IntrospectionStateNumber>735</IntrospectionStateNumber>
       <ObjectId>5</ObjectId>
       <OwnerName>rob</OwnerName>
     </database>
@@ -4817,79 +4827,11 @@ true posixrules
     <schema id="262" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-06-18.12:22:59</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>735</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-06-19.13:24:35</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>518</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
     </schema>
-    <sequence id="263" parent="262" name="booking_id_seq">
-      <ObjectId>24702</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
-      <StateNumber>764</StateNumber>
-      <StoredType>integer|0s</StoredType>
-      <OwnerName>rob</OwnerName>
-    </sequence>
-    <sequence id="264" parent="262" name="room_id_seq">
-      <ObjectId>24695</ObjectId>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StartValue>1</StartValue>
-      <StateNumber>763</StateNumber>
-      <StoredType>integer|0s</StoredType>
-      <OwnerName>rob</OwnerName>
-    </sequence>
-    <table id="265" parent="262" name="booking_participant">
-      <ObjectId>24721</ObjectId>
-      <StateNumber>765</StateNumber>
-      <AccessMethodId>2</AccessMethodId>
-      <OwnerName>rob</OwnerName>
-    </table>
-    <column id="266" parent="265" name="booking_id">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StateNumber>765</StateNumber>
-      <StoredType>integer|0s</StoredType>
-      <TypeId>23</TypeId>
-    </column>
-    <column id="267" parent="265" name="user_id">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StateNumber>765</StateNumber>
-      <StoredType>integer|0s</StoredType>
-      <TypeId>23</TypeId>
-    </column>
-    <foreign-key id="268" parent="265" name="booking_participant_booking_id_fkey">
-      <ColNames>booking_id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24726</ObjectId>
-      <StateNumber>765</StateNumber>
-      <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>24703</RefTableId>
-    </foreign-key>
-    <foreign-key id="269" parent="265" name="booking_participant_user_id_fkey">
-      <ColNames>user_id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24731</ObjectId>
-      <StateNumber>765</StateNumber>
-      <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>24687</RefTableId>
-    </foreign-key>
-    <index id="270" parent="265" name="booking_participant_pkey">
-      <ColNames>booking_id
-user_id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24724</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>765</StateNumber>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-    </index>
-    <key id="271" parent="265" name="booking_participant_pkey">
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24725</ObjectId>
-      <Primary>1</Primary>
-      <StateNumber>765</StateNumber>
-      <UnderlyingIndexId>24724</UnderlyingIndexId>
-    </key>
   </database-model>
 </dataSource>

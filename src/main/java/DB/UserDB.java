@@ -1,7 +1,11 @@
 package DB;
 
-import Model.*;
+import Model.Admin;
+import Model.FacultyManager;
+import Model.Student;
+import Model.User;
 import Util.JdbcUtil;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+@Repository
 public class UserDB {
 
     private static final Function<ResultSet, User> USER_MAPPER = rs -> {

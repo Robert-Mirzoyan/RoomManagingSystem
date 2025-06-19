@@ -1,41 +1,51 @@
 package Service;
 
-import Model.*;
-import DB.*;
+import Repository.RoomRepository;
+import Model.Admin;
+import Model.Room;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.*;
 
+@Service
 public class RoomService {
-    private final RoomDB roomDB = new RoomDB();
+//    private final RoomDB roomDB;
+    private final RoomRepository roomRepository;
+
+    @Autowired
+    public RoomService(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
 
     public boolean addRoom(String name, String type, int capacity, Admin admin) {
         if (!admin.getRole().equals("Admin")){
             return false;
         }
         Room room = new Room(0, name, type, capacity);
-        roomDB.save(room);
+        roomRepository.save(room);
         return true;
     }
 
     public boolean removeRoom(int roomId) {
-        Room room = roomDB.findById(roomId);
+        Room room = roomRepository.findById(roomId).orElse(null);
         if (room == null) return false;
-        roomDB.deleteById(roomId);
+        roomRepository.deleteById(roomId);
         return true;
     }
 
     public boolean updateRoom(int roomId, String name, String type, int capacity) {
-        Room room = roomDB.findById(roomId);
+        Room room = roomRepository.findById(roomId).orElse(null);
         if (room == null) return false;
         room.updateDetails(name, type, capacity);
-        roomDB.update(room);
+        roomRepository.save(room);
         return true;
     }
 
     public Room getRoom(int roomId) {
-        return roomDB.findById(roomId);
+        return roomRepository.findById(roomId).orElse(null);
     }
 
     public List<Room> getAllRooms() {
-        return roomDB.findAll();
+        return roomRepository.findAll();
     }
 }

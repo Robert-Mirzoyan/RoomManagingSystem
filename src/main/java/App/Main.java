@@ -1,36 +1,35 @@
 package App;
 
-import Service.*;
+import Repository.*;
 import Model.*;
-import DB.*;
-import Util.JdbcUtil;
+import Service.*;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.*;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
+@SpringBootApplication(scanBasePackages = {"Service"})
+@EntityScan(basePackages = "Model")
+@EnableJpaRepositories("Repository")
 public class Main {
     public static void main(String[] args) {
-        JdbcUtil.init();
+        ApplicationContext context = SpringApplication.run(Main.class, args);
+//        JdbcUtil.init();
 
-        RoomService roomService = new RoomService();
-        BookingService bookingService = new BookingService();
-        ReportService reportService = new ReportService(bookingService);
+        RoomService roomService = context.getBean(RoomService.class);
+        BookingService bookingService = context.getBean(BookingService.class);
+        ReportService reportService = context.getBean(ReportService.class);
+        UserRepository userRepository = context.getBean(UserRepository.class);
 
-        UserDB userDB = new UserDB();
+        ArrayList<Student> students = new ArrayList<>(userRepository.findAllStudents());
 
-        ArrayList<Student> students = new ArrayList<>(userDB.findAllStudents());
-
-        FacultyManager manager = (FacultyManager) userDB.findByEmail("skachat@aua.am").orElseThrow();
-        Admin admin = (Admin) userDB.findByEmail("artur@edu.aua.am").orElseThrow();
-
-        // Rooms
-//        roomService.addRoom("Room A", "Lab", 20, admin);
-//        roomService.addRoom("Room B", "Auditorium", 30, admin);
+        FacultyManager manager = (FacultyManager) userRepository.findByEmail("skachat@aua.am").orElseThrow();
+        Admin admin = (Admin) userRepository.findByEmail("artur@edu.aua.am").orElseThrow();
 
         // For testing
         // 2025/06/01 12:30-2025/06/01 14:00
@@ -44,11 +43,12 @@ public class Main {
             int input = scanner.nextInt();
             if (input == 0){
                 System.out.println("Exited the system. Goodbye!");
-                JdbcUtil.close();
+//                JdbcUtil.close();
+                SpringApplication.exit(context);
                 break;
             }
             else if (input == 1){
-                studentAccount(students.getFirst(), bookingService, roomService, scanner);
+                studentAccount(students.get(0), bookingService, roomService, scanner);
             }
             else if (input == 2){
                 studentAccount(students.get(1), bookingService, roomService, scanner);
@@ -86,8 +86,8 @@ public class Main {
                             booking.getId(),
                             booking.getRoom().getName(),
                             booking.getStatus(),
-                            booking.getTimeSlot().getStartTime(),
-                            booking.getTimeSlot().getEndTime()
+                            booking.getStartTime(),
+                            booking.getEndTime()
                     );
                     System.out.println("Participants:");
                     System.out.printf("(You)ID: %d | Name: %s | Email: %s%n", booking.getStudent().getId(), booking.getStudent().getName(), booking.getStudent().getEmail());
@@ -102,8 +102,8 @@ public class Main {
                 int id;
                 try {
                     id = scanner.nextInt();
-                    TimeSlot slot = readTimeSlotFromInput(scanner, id);
-                    boolean result = bookingService.editBooking(id, slot, student);
+                    List<LocalDateTime> times = readTimeSlotFromInput(scanner);
+                    boolean result = bookingService.editBooking(id, times.get(0), times.get(1), student);
                     System.out.println(result ? "Booking edit requested" : "Booking edit request failed");
                 } catch (IllegalArgumentException e) {
                     System.out.println("Invalid time slot format");
@@ -120,8 +120,8 @@ public class Main {
                 int id;
                 try {
                     id = scanner.nextInt();
-                    TimeSlot slot = readTimeSlotFromInput(scanner, 0);
-                    boolean result = bookingService.requestBooking(roomService.getRoom(id), slot, student);
+                    List<LocalDateTime> times = readTimeSlotFromInput(scanner);
+                    boolean result = bookingService.requestBooking(roomService.getRoom(id), times.get(0), times.get(1), student);
                     System.out.println(result ? "Booking requested" : "Booking request failed");
                 } catch (IllegalArgumentException e) {
                     System.out.println("Invalid time slot format");
@@ -143,14 +143,17 @@ public class Main {
         }
     }
 
-    private static TimeSlot readTimeSlotFromInput(Scanner scanner, int slotId) {
+    private static List<LocalDateTime> readTimeSlotFromInput(Scanner scanner) {
         System.out.println("Enter time slot in \"yyyy/MM/dd HH:mm-yyyy/MM/dd HH:mm\" format");
         scanner.nextLine(); // Consume newline
         String input = scanner.nextLine();
         String[] parts = input.split("-");
         if (parts.length != 2) throw new IllegalArgumentException("Invalid format");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-        return new TimeSlot(slotId, LocalDateTime.parse(parts[0], formatter), LocalDateTime.parse(parts[1], formatter));
+        List<LocalDateTime> timeSlots = new ArrayList<>();
+        timeSlots.add(LocalDateTime.parse(parts[0], formatter));
+        timeSlots.add(LocalDateTime.parse(parts[1], formatter));
+        return timeSlots;
     }
 
     public static void managerAccount(FacultyManager manager, BookingService bookingService, Scanner scanner){
@@ -174,8 +177,8 @@ public class Main {
                             booking.getRoom().getId(),
                             booking.getStatus(),
                             booking.getStudent().getId(),
-                            booking.getTimeSlot().getStartTime(),
-                            booking.getTimeSlot().getEndTime()
+                            booking.getStartTime(),
+                            booking.getEndTime()
                     );
 //                    booking.getParticipants();
                 }
@@ -204,8 +207,8 @@ public class Main {
                             booking.getRoom().getId(),
                             booking.getStatus(),
                             booking.getStudent().getId(),
-                            booking.getTimeSlot().getStartTime(),
-                            booking.getTimeSlot().getEndTime()
+                            booking.getStartTime(),
+                            booking.getEndTime()
                     );
                 }
             }
@@ -221,8 +224,8 @@ public class Main {
                             booking.getRoom().getId(),
                             booking.getStatus(),
                             booking.getStudent().getId(),
-                            booking.getTimeSlot().getStartTime(),
-                            booking.getTimeSlot().getEndTime()
+                            booking.getStartTime(),
+                            booking.getEndTime()
                     );
                 }
             }
@@ -343,8 +346,8 @@ public class Main {
                             booking.getRoom().getName(),
                             booking.getStatus(),
                             booking.getStudent().getId(),
-                            booking.getTimeSlot().getStartTime(),
-                            booking.getTimeSlot().getEndTime()
+                            booking.getStartTime(),
+                            booking.getEndTime()
                     );
                 }
             }

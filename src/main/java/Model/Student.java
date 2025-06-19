@@ -1,8 +1,18 @@
 package Model;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
+@Entity
+@DiscriminatorValue("Student")
 public class Student extends User {
+
     public Student(int id, String name, String email) {
         super(id, name, email);
+    }
+
+    public Student() {
+        super();
     }
 
     @Override

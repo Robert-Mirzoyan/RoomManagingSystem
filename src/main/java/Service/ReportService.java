@@ -1,12 +1,18 @@
 package Service;
 
-import Model.*;
+import Model.Booking;
+import Model.Room;
+import Model.Status;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
 
+@Service
 public class ReportService {
     private final BookingService bookingService;
 
+    @Autowired
     public ReportService(BookingService bookingService) {
         this.bookingService = bookingService;
     }
@@ -34,7 +40,7 @@ public class ReportService {
         List<Booking> result = new ArrayList<>();
         for (Booking booking : bookingService.getAllBookings()) {
             if (booking.getStatus() == Status.APPROVED &&
-                    booking.getTimeSlot().getStartTime().toLocalDate().equals(date)) {
+                    booking.getStartTime().toLocalDate().equals(date)) {
                 result.add(booking);
             }
         }

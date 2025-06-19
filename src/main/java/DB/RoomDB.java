@@ -2,12 +2,14 @@ package DB;
 
 import Model.Room;
 import Util.JdbcUtil;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Function;
 
+@Repository
 public class RoomDB {
 
     private static final Function<ResultSet, Room> ROOM_MAPPER = rs -> {

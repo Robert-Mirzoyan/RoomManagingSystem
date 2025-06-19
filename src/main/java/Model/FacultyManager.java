@@ -1,8 +1,17 @@
 package Model;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
+@Entity
+@DiscriminatorValue("FacultyManager")
 public class FacultyManager extends User {
     public FacultyManager(int id, String name, String email) {
         super(id, name, email);
+    }
+
+    public FacultyManager() {
+        super();
     }
 
     @Override

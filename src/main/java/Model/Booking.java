@@ -1,22 +1,57 @@
 package Model;
 
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
 public class Booking {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id")
     private Room room;
-    private TimeSlot timeSlot;
+
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private Student student;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Booking(int id, Room room, TimeSlot timeSlot, Student student, Status status) {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "booking_participant",
+            joinColumns = @JoinColumn(name = "booking_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<Student> participants = new HashSet<>();
+
+
+    public Booking(int id, Room room, LocalDateTime startTime, LocalDateTime endTime, Student student, Status status) {
         this.id = id;
         this.room = room;
-        this.timeSlot = timeSlot;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.student = student;
         this.status = status;
     }
 
+    public Booking() {
+    }
+
+    public boolean overlaps(LocalDateTime startTime, LocalDateTime endTime) {
+        return this.startTime.isBefore(endTime) && this.endTime.isAfter(startTime);
+    }
+
     public boolean isEditable() {
-        return status == Status.PENDING;
+        return status != Status.REJECTED && status != Status.CANCELLED;
     }
 
     public int getId() {
@@ -27,8 +62,12 @@ public class Booking {
         return room;
     }
 
-    public TimeSlot getTimeSlot() {
-        return timeSlot;
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     public Student getStudent() {
@@ -48,18 +87,28 @@ public class Booking {
         this.room = room;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     @SuppressWarnings("unused")
     public void setStudent(Student student) {
         this.student = student;
     }
 
     @SuppressWarnings("unused")
-    public void setTimeSlot(TimeSlot timeSlot) {
-        this.timeSlot = timeSlot;
-    }
-
-    @SuppressWarnings("unused")
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Set<Student> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Set<Student> participants) {
+        this.participants = participants;
     }
 }

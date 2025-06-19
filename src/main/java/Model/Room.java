@@ -1,7 +1,14 @@
 package Model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "Room")
 public class Room {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
     private String type;
     private int capacity;
@@ -11,6 +18,9 @@ public class Room {
         this.name = name;
         this.type = type;
         this.capacity = capacity;
+    }
+
+    public Room() {
     }
 
     public void updateDetails(String name, String type, int capacity) {

@@ -1,4 +1,7 @@
-import Model.*;
+import Model.Admin;
+import Model.FacultyManager;
+import Model.Student;
+import Model.User;
 import Util.JdbcUtil;
 import org.junit.jupiter.api.*;
 import java.sql.*;

@@ -1,6 +1,5 @@
 DROP TABLE IF EXISTS booking_participant CASCADE;
 DROP TABLE IF EXISTS booking CASCADE;
-DROP TABLE IF EXISTS timeslot CASCADE;
 DROP TABLE IF EXISTS room CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 
@@ -18,22 +17,16 @@ CREATE TABLE room (
     capacity INT NOT NULL
 );
 
-CREATE TABLE timeslot (
-    id SERIAL PRIMARY KEY,
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP NOT NULL,
-    CHECK (end_time > start_time)
-);
-
 CREATE TABLE booking (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL ,
-    room_id INT NOT NULL ,
-    timeslot_id INT NOT NULL ,
+    user_id INT NOT NULL,
+    room_id INT NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')),
     FOREIGN KEY (user_id) REFERENCES "user"(id),
     FOREIGN KEY (room_id)  REFERENCES room(id),
-    FOREIGN KEY (timeslot_id) REFERENCES timeslot(id)
+    CHECK (end_time > start_time)
 );
 
 -- Many-to-Many: Booking User
@@ -59,22 +52,22 @@ VALUES
     ('Room A', 'Lab', 20),
     ('Room B', 'Auditorium', 30);
 
-INSERT INTO timeslot (start_time, end_time)
-VALUES
-    ('2025-06-03 12:30', '2025-06-03 14:00'),
-    ('2025-06-02 12:30', '2025-06-02 14:00'),
-    ('2025-06-04 12:30', '2025-06-04 14:00'),
-    ('2025-06-01 12:30', '2025-06-01 14:00'),
-    ('2025-06-02 16:30', '2025-06-02 18:00'),
-    ('2025-06-07 16:30', '2025-06-07 18:00');
+-- INSERT INTO timeslot (start_time, end_time)
+-- VALUES
+--     ('2025-06-03 12:30', '2025-06-03 14:00'),
+--     ('2025-06-02 12:30', '2025-06-02 14:00'),
+--     ('2025-06-04 12:30', '2025-06-04 14:00'),
+--     ('2025-06-01 12:30', '2025-06-01 14:00'),
+--     ('2025-06-02 16:30', '2025-06-02 18:00'),
+--     ('2025-06-07 16:30', '2025-06-07 18:00');
 
-INSERT INTO booking (user_id, room_id, timeslot_id, status)
+INSERT INTO booking (user_id, room_id, start_time, end_time, status)
 VALUES
-    (101, 1, 1, 'PENDING'),
-    (102, 1, 2, 'PENDING'),
-    (101, 1, 3, 'PENDING'),
-    (102, 2, 4, 'PENDING'),
-    (101, 2, 5, 'PENDING');
+    (101, 1, '2025-06-03 12:30', '2025-06-03 14:00', 'PENDING'),
+    (102, 1, '2025-06-02 12:30', '2025-06-02 14:00',  'PENDING'),
+    (101, 1, '2025-06-04 12:30', '2025-06-04 14:00',  'PENDING'),
+    (102, 2, '2025-06-01 12:30', '2025-06-01 14:00',  'PENDING'),
+    (101, 2, '2025-06-02 16:30', '2025-06-02 18:00', 'PENDING');
 
 INSERT INTO booking_participant (booking_id, user_id)
 VALUES

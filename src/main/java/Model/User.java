@@ -1,14 +1,31 @@
 package Model;
 
+import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "\"user\"")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "role")
 public abstract class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
     protected String name;
     protected String email;
+
+    @ManyToMany(mappedBy = "participants")
+    private Set<Booking> bookings = new HashSet<>();
 
     public User(int id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public User() {
     }
 
     public int getId() {
@@ -36,4 +53,12 @@ public abstract class User {
     }
 
     public abstract String getRole();
+
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
+    }
 }

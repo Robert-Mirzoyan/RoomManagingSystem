@@ -1,4 +1,4 @@
-package com.example.project.Model;
+package com.example.project.model;
 
 public enum Status {
     APPROVED,

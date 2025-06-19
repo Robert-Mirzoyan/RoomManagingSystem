@@ -1,9 +1,9 @@
-package com.example.project.Service;
+package com.example.project.service;
 
-import com.example.project.Model.Booking;
-import com.example.project.Model.Room;
-import com.example.project.Model.Status;
-import com.example.project.Repository.RoomRepository;
+import com.example.project.model.Booking;
+import com.example.project.model.Room;
+import com.example.project.model.Status;
+import com.example.project.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

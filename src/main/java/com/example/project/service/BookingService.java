@@ -1,8 +1,8 @@
-package com.example.project.Service;
+package com.example.project.service;
 
-import com.example.project.Repository.BookingRepository;
-import com.example.project.Repository.UserRepository;
-import com.example.project.Model.*;
+import com.example.project.repository.BookingRepository;
+import com.example.project.repository.UserRepository;
+import com.example.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
-import static com.example.project.Model.Status.*;
+import static com.example.project.model.Status.*;
 
 @Service
 public class BookingService {

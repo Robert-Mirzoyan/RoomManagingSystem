@@ -1,7 +1,7 @@
-package com.example.project.Repository;
+package com.example.project.repository;
 
-import com.example.project.Model.Booking;
-import com.example.project.Model.Status;
+import com.example.project.model.Booking;
+import com.example.project.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

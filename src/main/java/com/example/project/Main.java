@@ -1,8 +1,8 @@
 package com.example.project;
 
-import com.example.project.Repository.*;
-import com.example.project.Model.*;
-import com.example.project.Service.*;
+import com.example.project.repository.*;
+import com.example.project.model.*;
+import com.example.project.service.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;

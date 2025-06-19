@@ -1,7 +1,7 @@
-package com.example.project.Repository;
+package com.example.project.repository;
 
-import com.example.project.Model.Student;
-import com.example.project.Model.User;
+import com.example.project.model.Student;
+import com.example.project.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

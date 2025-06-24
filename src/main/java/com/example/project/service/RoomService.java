@@ -45,7 +45,9 @@ public class RoomService {
         return roomRepository.findById(roomId).orElse(null);
     }
 
-    public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+    public void printAllRooms() {
+        for (Room room : roomRepository.findAll()){
+            System.out.println(room.getName() + " (" + room.getType() + ", " + room.getCapacity() + " capacity), ID: " + room.getId());
+        }
     }
 }

@@ -114,4 +114,18 @@ public class Booking {
     public void setParticipants(Set<Student> participants) {
         this.participants = participants;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Booking ID: %d, Room: %s (ID: %d), Booking status: %s, Requester ID: %d, Time Slot: %s - %s",
+                this.getId(),
+                this.getRoom().getName(),
+                this.getRoom().getId(),
+                this.getStatus(),
+                this.getStudent().getId(),
+                this.getStartTime(),
+                this.getEndTime()
+        );
+    }
 }

@@ -77,14 +77,7 @@ public class Main {
                     System.out.println("\nNo Bookings found for this student");
                 }
                 for (Booking booking : bookings){
-                    System.out.printf(
-                            "Booking ID: %d, Room: %s, Booking status: %s, Time Slot: %s - %s%n",
-                            booking.getId(),
-                            booking.getRoom().getName(),
-                            booking.getStatus(),
-                            booking.getStartTime(),
-                            booking.getEndTime()
-                    );
+                    System.out.println(booking.toString());
                     System.out.println("Participants:");
                     System.out.printf("(You)ID: %d | Name: %s | Email: %s%n", booking.getStudent().getId(), booking.getStudent().getName(), booking.getStudent().getEmail());
                     for (Student s : booking.getParticipants()) {
@@ -106,10 +99,7 @@ public class Main {
                     System.out.println("Booking not found");
                 }
             } else if (input == 3) {
-                List<Room> rooms = roomService.getAllRooms();
-                for (Room room : rooms) {
-                    System.out.println(room.getName() + " (" + room.getType() + ", " + room.getCapacity() + " capacity), ID: " + room.getId());
-                }
+                roomService.printAllRooms();
 
                 System.out.println("Enter room id to add booking");
                 int id;
@@ -163,17 +153,7 @@ public class Main {
                     System.out.println("No Bookings found for this student");
                 }
                 for (Booking booking : bookings){
-                    System.out.printf(
-                            "Booking ID: %d, Room: %s (ID: %d), Booking status: %s, Requester ID: %d, Time Slot: %s - %s%n",
-                            booking.getId(),
-                            booking.getRoom().getName(),
-                            booking.getRoom().getId(),
-                            booking.getStatus(),
-                            booking.getStudent().getId(),
-                            booking.getStartTime(),
-                            booking.getEndTime()
-                    );
-//                    booking.getParticipants();
+                    System.out.println(booking.toString());
                 }
             }
             else if (input == 2){
@@ -191,16 +171,7 @@ public class Main {
                 int id = scanner.nextInt();
                 List<Booking> bookings = bookingService.filterBookings(id);
                 for (Booking booking : bookings){
-                    System.out.printf(
-                            "Booking ID: %d, Room: %s (ID: %d), Booking status: %s, Requester ID: %d, Time Slot: %s - %s%n",
-                            booking.getId(),
-                            booking.getRoom().getName(),
-                            booking.getRoom().getId(),
-                            booking.getStatus(),
-                            booking.getStudent().getId(),
-                            booking.getStartTime(),
-                            booking.getEndTime()
-                    );
+                    System.out.println(booking.toString());
                 }
             }
             else if (input == 5){
@@ -208,16 +179,7 @@ public class Main {
                 int id = scanner.nextInt();
                 List<Booking> bookings = bookingService.getBookingsByStudent(id);
                 for (Booking booking : bookings){
-                    System.out.printf(
-                            "Booking ID: %d, Room: %s (ID: %d), Booking status: %s, Requester ID: %d, Time Slot: %s - %s%n",
-                            booking.getId(),
-                            booking.getRoom().getName(),
-                            booking.getRoom().getId(),
-                            booking.getStatus(),
-                            booking.getStudent().getId(),
-                            booking.getStartTime(),
-                            booking.getEndTime()
-                    );
+                    System.out.println(booking.toString());
                 }
             }
         }
@@ -231,12 +193,8 @@ public class Main {
                 break;
             }
             else if (input == 1){
-                List<Room> rooms = roomService.getAllRooms();
-
-                for (Room room : rooms){
-                    System.out.println(room.getName() + " (" + room.getType() + ", " + room.getCapacity() + " capacity), ID: " + room.getId());
-                }
-                System.out.println("Opening time: " + bookingService.getOpenTime() + ", closing time: " + bookingService.getCloseTime());
+                roomService.printAllRooms();
+                bookingService.printBookingTimeInterval();
             }
             else if (input == 2){
                 System.out.println("Enter new opening time in \"HH:mm\" format");
@@ -245,9 +203,8 @@ public class Main {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
                 System.out.println("Enter new closing time in \"HH:mm\" format");
                 String newCloseTime = scanner.nextLine();
-                bookingService.setOpenTime(LocalTime.parse(newOpenTime, formatter));
-                bookingService.setCloseTime(LocalTime.parse(newCloseTime, formatter));
-                System.out.println("Opening time changed to " + bookingService.getOpenTime() + ", closing time changed to " + bookingService.getCloseTime());
+                bookingService.updateBookingTimeInterval(LocalTime.parse(newOpenTime, formatter), LocalTime.parse(newCloseTime, formatter));
+                System.out.println("Opening time changed to " +LocalTime.parse(newOpenTime, formatter) + ", closing time changed to " + LocalTime.parse(newCloseTime, formatter));
             }
             else if (input == 3){
                 System.out.println("Enter new room name");
@@ -329,15 +286,7 @@ public class Main {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
                 List<Booking> bookings = reportService.roomUsageByDate(LocalDate.parse(date,formatter));
                 for (Booking booking : bookings){
-                    System.out.printf(
-                            "Booking ID: %d, Room: %s, Booking status: %s, Requester ID: %d, Time Slot: %s - %s%n",
-                            booking.getId(),
-                            booking.getRoom().getName(),
-                            booking.getStatus(),
-                            booking.getStudent().getId(),
-                            booking.getStartTime(),
-                            booking.getEndTime()
-                    );
+                    System.out.println(booking.toString());
                 }
             }
         }

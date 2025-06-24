@@ -1,7 +1,7 @@
 package com.example.project.service;
 
-import com.example.project.repository.BookingRepository;
-import com.example.project.repository.UserRepository;
+import com.example.project.configurations.*;
+import com.example.project.repository.*;
 import com.example.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,14 @@ import static com.example.project.model.Status.*;
 public class BookingService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final BookingTimeConfig bookingTimeConfig;
 
-    private LocalTime openTime = LocalTime.of(8, 0);
-    private LocalTime closeTime = LocalTime.of(22, 0);
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, UserRepository userRepository) {
+    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, BookingTimeConfig  bookingTimeConfig) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
+        this.bookingTimeConfig = bookingTimeConfig;
     }
 
     public void requestBooking(Room room, LocalDateTime startTime, LocalDateTime endTime, Student student) {
@@ -35,7 +35,7 @@ public class BookingService {
         }
 
         if (isNotWithinAllowedHours(startTime, endTime)) {
-            System.out.println("Booking must be between " + openTime + " and " + closeTime + ".\nBooking request failed");
+            System.out.println("Booking must be between " + bookingTimeConfig.getOpenTime() + " and " + bookingTimeConfig.getCloseTime() + ".\nBooking request failed");
             return;
         }
 
@@ -65,7 +65,7 @@ public class BookingService {
         }
 
         if (isNotWithinAllowedHours(startTime, endTime)) {
-            System.out.println("Edited time must be between " + openTime + " and " + closeTime + ".\nBooking edit request failed");
+            System.out.println("Edited time must be between " + bookingTimeConfig.getOpenTime() + " and " + bookingTimeConfig.getCloseTime() + ".\nBooking edit request failed");
             return;
         }
 
@@ -95,7 +95,7 @@ public class BookingService {
         LocalTime start = newStartTime.toLocalTime();
         LocalTime end = newEndTime.toLocalTime();
 
-        return start.isBefore(openTime) || end.isAfter(closeTime) ||
+        return start.isBefore(bookingTimeConfig.getOpenTime()) || end.isAfter(bookingTimeConfig.getCloseTime()) ||
                 !newStartTime.toLocalDate().equals(newEndTime.toLocalDate());
     }
 
@@ -235,19 +235,12 @@ public class BookingService {
         return bookingRepository.findByStudentId(id);
     }
 
-    public LocalTime getOpenTime() {
-        return openTime;
+    public void printBookingTimeInterval(){
+        System.out.println("Opening time: " + bookingTimeConfig.getOpenTime() + ", closing time: " + bookingTimeConfig.getCloseTime());
     }
 
-    public LocalTime getCloseTime() {
-        return closeTime;
-    }
-
-    public void setOpenTime(LocalTime openTime) {
-        this.openTime = openTime;
-    }
-
-    public void setCloseTime(LocalTime closeTime) {
-        this.closeTime = closeTime;
+    public void updateBookingTimeInterval(LocalTime newOpenTime, LocalTime newCloseTime) {
+        bookingTimeConfig.setOpenTime(newOpenTime);
+        bookingTimeConfig.setCloseTime(newCloseTime);
     }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@SuppressWarnings({"unused", "SqlSourceToSinkFlow"})
 public class JdbcUtil {
     private static final String URL = "jdbc:postgresql://localhost:5432/mydb";
     private static final String USER = "rob";

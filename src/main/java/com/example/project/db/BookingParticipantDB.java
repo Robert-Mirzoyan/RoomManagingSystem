@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 @Repository
+@SuppressWarnings("unused")
 public class BookingParticipantDB {
 
     private static final Function<ResultSet, Student> STUDENT_MAPPER = rs -> {

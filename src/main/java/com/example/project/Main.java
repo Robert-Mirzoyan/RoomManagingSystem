@@ -15,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 public class Main {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(Main.class, args);
-//        JdbcUtil.init();
 
         RoomService roomService = context.getBean(RoomService.class);
         BookingService bookingService = context.getBean(BookingService.class);
@@ -39,7 +38,6 @@ public class Main {
             int input = scanner.nextInt();
             if (input == 0){
                 System.out.println("Exited the system. Goodbye!");
-//                JdbcUtil.close();
                 SpringApplication.exit(context);
                 break;
             }
@@ -85,7 +83,7 @@ public class Main {
                     }
                     System.out.println();
                 }
-            } // 2025/06/01 12:30-2025/06/01 14:00
+            }
             else if (input == 2) {
                 System.out.println("Enter booking ID to edit");
                 int id;
@@ -99,7 +97,10 @@ public class Main {
                     System.out.println("Booking not found");
                 }
             } else if (input == 3) {
-                roomService.printAllRooms();
+                List<Room> rooms = roomService.getAllRooms();
+                for (Room room : rooms){
+                    System.out.println(room.toString());
+                }
 
                 System.out.println("Enter room id to add booking");
                 int id;
@@ -193,7 +194,10 @@ public class Main {
                 break;
             }
             else if (input == 1){
-                roomService.printAllRooms();
+                List<Room> rooms = roomService.getAllRooms();
+                for (Room room : rooms){
+                    System.out.println(room.toString());
+                }
                 bookingService.printBookingTimeInterval();
             }
             else if (input == 2){

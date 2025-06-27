@@ -16,6 +16,9 @@ public class RoomService {
     }
 
     public void addRoom(String name, String type, int capacity) {
+        if (capacity <= 0) {
+            return;
+        }
         Room room = new Room(0, name, type, capacity);
         roomRepository.save(room);
     }
@@ -45,9 +48,7 @@ public class RoomService {
         return roomRepository.findById(roomId).orElse(null);
     }
 
-    public void printAllRooms() {
-        for (Room room : roomRepository.findAll()){
-            System.out.println(room.getName() + " (" + room.getType() + ", " + room.getCapacity() + " capacity), ID: " + room.getId());
-        }
+    public List<Room> getAllRooms() {
+        return roomRepository.findAll();
     }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.function.Function;
 
 @Repository
+@SuppressWarnings("unused")
 public class BookingDB {
     private RoomDB roomDB;
     private UserDB userDB;
@@ -39,7 +40,7 @@ public class BookingDB {
         }
     };
 
-    public void save(Booking booking) throws SQLException {
+    public void save(Booking booking) {
         String query = "INSERT INTO booking (user_id, room_id, start_time, end_time, status) VALUES (?, ?, ?, ?)";
         JdbcUtil.execute(query, booking.getStudent().getId(), booking.getRoom().getId(), booking.getStartTime(), booking.getEndTime(), booking.getStatus().toString());
     }

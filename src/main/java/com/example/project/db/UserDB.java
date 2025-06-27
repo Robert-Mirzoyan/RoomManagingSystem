@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Repository
+@SuppressWarnings("unused")
 public class UserDB {
 
     private static final Function<ResultSet, User> USER_MAPPER = rs -> {

@@ -1,3 +1,5 @@
+package com.example.project.exercise;
+
 import com.example.project.model.Admin;
 import com.example.project.model.FacultyManager;
 import com.example.project.model.Student;

@@ -19,7 +19,7 @@ public class RoomService {
         if (capacity <= 0) {
             return;
         }
-        Room room = new Room(0, name, type, capacity);
+        Room room = new Room(name, type, capacity);
         roomRepository.save(room);
     }
 

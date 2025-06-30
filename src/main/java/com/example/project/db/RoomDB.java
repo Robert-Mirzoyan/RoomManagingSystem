@@ -19,7 +19,7 @@ public class RoomDB {
             String name = rs.getString("name");
             String type = rs.getString("type");
             int capacity = rs.getInt("capacity");
-            return new Room(id, name, type, capacity);
+            return new Room(name, type, capacity);
         } catch (SQLException e) {
             throw new RuntimeException("Error mapping room", e);
         }

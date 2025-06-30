@@ -49,7 +49,7 @@ public class BookingService {
             }
         }
 
-        Booking booking = new Booking(0, room, startTime, endTime, student, PENDING);
+        Booking booking = new Booking(room, startTime, endTime, student, PENDING);
         promptToAddParticipants(booking, student.getId());
         bookingRepository.save(booking);
         System.out.println("Booking requested");

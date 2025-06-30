@@ -19,8 +19,7 @@ public abstract class User {
     @ManyToMany(mappedBy = "participants")
     private Set<Booking> bookings = new HashSet<>();
 
-    public User(int id, String name, String email) {
-        this.id = id;
+    public User(String name, String email) {
         this.name = name;
         this.email = email;
     }
@@ -48,6 +47,7 @@ public abstract class User {
         this.name = name;
     }
 
+    @SuppressWarnings("unused")
     public void setEmail(String email) {
         this.email = email;
     }

@@ -34,8 +34,7 @@ public class Booking {
     private Set<Student> participants = new HashSet<>();
 
 
-    public Booking(int id, Room room, LocalDateTime startTime, LocalDateTime endTime, Student student, Status status) {
-        this.id = id;
+    public Booking(Room room, LocalDateTime startTime, LocalDateTime endTime, Student student, Status status) {
         this.room = room;
         this.startTime = startTime;
         this.endTime = endTime;

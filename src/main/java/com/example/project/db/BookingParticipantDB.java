@@ -17,7 +17,7 @@ public class BookingParticipantDB {
             int id = rs.getInt("id");
             String name = rs.getString("name");
             String email = rs.getString("email");
-            return new Student(id, name, email);
+            return new Student(name, email);
         } catch (SQLException e) {
             throw new RuntimeException("Error mapping student", e);
         }

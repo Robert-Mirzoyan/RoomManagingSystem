@@ -18,8 +18,7 @@ public class Room {
     @OneToMany(mappedBy = "room",  cascade = CascadeType.ALL,  orphanRemoval = true,  fetch = FetchType.EAGER)
     List<Booking> bookings;
 
-    public Room(int id, String name, String type, int capacity) {
-        this.id = id;
+    public Room(String name, String type, int capacity) {
         this.name = name;
         this.type = type;
         this.capacity = capacity;

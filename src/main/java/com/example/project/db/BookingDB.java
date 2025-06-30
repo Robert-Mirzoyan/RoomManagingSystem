@@ -34,7 +34,7 @@ public class BookingDB {
             int studentId = rs.getInt("user_id");
             Status status = Status.valueOf(rs.getString("status"));
 
-            return new Booking(id, roomDB.findById(roomId), startTime, endTime, userDB.findByStudentId(studentId), status);
+            return new Booking(roomDB.findById(roomId), startTime, endTime, userDB.findByStudentId(studentId), status);
         } catch (SQLException e) {
             throw new RuntimeException("Error mapping booking", e);
         }

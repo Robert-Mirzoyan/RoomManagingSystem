@@ -6,8 +6,8 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("FacultyManager")
 public class FacultyManager extends User {
-    public FacultyManager(int id, String name, String email) {
-        super(id, name, email);
+    public FacultyManager(String name, String email) {
+        super(name, email);
     }
 
     public FacultyManager() {

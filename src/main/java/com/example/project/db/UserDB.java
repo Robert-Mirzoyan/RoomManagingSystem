@@ -25,9 +25,9 @@ public class UserDB {
             String email = rs.getString("email");
 
             return switch (role) {
-                case "Student" -> new Student(id, name, email);
-                case "Admin" -> new Admin(id, name, email);
-                case "FacultyManager" -> new FacultyManager(id, name, email);
+                case "Student" -> new Student(name, email);
+                case "Admin" -> new Admin(name, email);
+                case "FacultyManager" -> new FacultyManager(name, email);
                 default -> throw new IllegalArgumentException("Unknown role: " + role);
             };
         } catch (SQLException e) {

@@ -2,16 +2,16 @@ package com.example.project.model;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("Admin")
+@Getter @Setter @NoArgsConstructor
 public class Admin extends User {
     public Admin(String name, String email) {
         super(name, email);
-    }
-
-    public Admin() {
-        super();
     }
 
     @Override

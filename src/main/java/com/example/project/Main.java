@@ -231,7 +231,7 @@ public class Main {
                 boolean canRemove = true;
                 for (Booking booking : bookings) {
                     if (booking.getStatus() == Status.APPROVED){
-                        System.out.println("Booking ID: " + booking.getId() + ", Room: " + booking.getRoom().getName() + " is still approved, cannot remove");
+                        System.out.println("Room: " + booking.getRoom().getName() + "has approved booking (Booking ID: " + booking.getId() +  "), cannot be removed");
                         canRemove = false;
                     }
                 }

@@ -1,11 +1,16 @@
 package com.example.project.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "Room")
+@Getter @Setter @NoArgsConstructor
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +27,7 @@ public class Room {
         this.name = name;
         this.type = type;
         this.capacity = capacity;
-    }
-
-    public Room() {
+        this.bookings = new ArrayList<>();
     }
 
     public void updateDetails(String name, String type, int capacity) {
@@ -33,56 +36,8 @@ public class Room {
         this.capacity = capacity;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @SuppressWarnings("unused")
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @SuppressWarnings("unused")
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public List<Booking> getBookings() {
-        return bookings;
-    }
-
-    @SuppressWarnings("unused")
-    public void setBookings(List<Booking> bookings) {
-        this.bookings = bookings;
-    }
-
     @Override
     public String toString() {
-        return "Room{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                ", capacity=" + capacity +
-                '}';
+        return name + " (" + type + ", " + capacity + " capacity), ID: " + id;
     }
 }

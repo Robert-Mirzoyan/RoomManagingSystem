@@ -3,6 +3,7 @@ package com.example.project.service;
 import com.example.project.repository.RoomRepository;
 import com.example.project.model.Room;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -49,6 +50,6 @@ public class RoomService {
     }
 
     public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+        return roomRepository.findAll(Sort.by("id").ascending());
     }
 }

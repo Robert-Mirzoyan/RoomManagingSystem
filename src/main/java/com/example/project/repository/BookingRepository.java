@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
-    List<Booking> findByStudentId(int studentId);
+    List<Booking> findByStudentIdOrderByIdAsc(int studentId);
 
     List<Booking> findByRoomId(int roomId);
 

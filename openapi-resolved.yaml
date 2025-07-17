@@ -1,0 +1,298 @@
+openapi: 3.0.4
+info:
+  title: Room Booking API
+  description: "API to manage room bookings, approvals, and users"
+  version: 1.0.0
+servers:
+- url: http://localhost:8080/api
+  description: Local development server
+paths:
+  /rooms:
+    get:
+      tags:
+      - Room
+      summary: Get all rooms
+      operationId: getAllRooms
+      parameters:
+      - name: page
+        in: query
+        description: Page number for pagination
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        description: Number of records per page
+        required: false
+        schema:
+          type: integer
+          default: 10
+      - name: sort
+        in: query
+        description: Sort by field
+        required: false
+        schema:
+          type: string
+          example: "capacity,asc"
+      - name: type
+        in: query
+        description: Filter by room type
+        required: false
+        schema:
+          type: string
+          example: Lab
+      responses:
+        "200":
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomListResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+      - Room
+      summary: Post Room
+      operationId: postRoom
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Room"
+        required: true
+      responses:
+        "201":
+          description: Posted Room
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /rooms/{id}:
+    get:
+      tags:
+      - Room
+      summary: Get room by ID
+      operationId: getRoomById
+      parameters:
+      - name: id
+        in: path
+        description: ID of the room to retrieve
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Room found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "404":
+          description: Room not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+      - Room
+      summary: Put room by ID
+      operationId: putRoomById
+      parameters:
+      - name: id
+        in: path
+        description: ID of room to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Room"
+        required: true
+      responses:
+        "200":
+          description: Room found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "400":
+          description: Invalid put data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Room not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+      - Room
+      summary: Delete room by ID
+      operationId: deleteRoomById
+      parameters:
+      - name: id
+        in: path
+        description: ID of the room to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Room deleted
+        "400":
+          description: Invalid delete data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Room not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      tags:
+      - Room
+      summary: Partially update a room by ID
+      operationId: patchRoomById
+      parameters:
+      - name: id
+        in: path
+        description: ID of the room to partially update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/rooms_id_body"
+        required: true
+      responses:
+        "200":
+          description: Room updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "400":
+          description: Invalid patch data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Room not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    Room:
+      required:
+      - capacity
+      - name
+      - type
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        capacity:
+          type: integer
+    RoomListResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/Room"
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Invalid request data
+        timestamp:
+          type: string
+          format: date-time
+    rooms_id_body:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        capacity:
+          type: integer
+      additionalProperties: false

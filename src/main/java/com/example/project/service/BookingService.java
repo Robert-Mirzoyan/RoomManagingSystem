@@ -4,6 +4,7 @@ import com.example.project.configurations.*;
 import com.example.project.repository.*;
 import com.example.project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -228,11 +229,11 @@ public class BookingService {
     }
 
     public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+        return bookingRepository.findAll(Sort.by("id").ascending());
     }
 
     public List<Booking> getBookingsByStudent(int id){
-        return bookingRepository.findByStudentId(id);
+        return bookingRepository.findByStudentIdOrderByIdAsc(id);
     }
 
     public void printBookingTimeInterval(){

@@ -16,33 +16,36 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
 
-    public void addRoom(String name, String type, int capacity) {
+    public Room addRoom(String name, String type, int capacity) {
         if (capacity <= 0) {
-            return;
+            return null;
         }
         Room room = new Room(name, type, capacity);
         roomRepository.save(room);
+        return room;
     }
 
-    public void removeRoom(int roomId) {
+    public Room removeRoom(int roomId) {
         Room room = roomRepository.findById(roomId).orElse(null);
         if (room == null) {
             System.out.println("Failed to remove room");
-            return;
+            return null;
         }
         roomRepository.deleteById(roomId);
         System.out.println("Room removed");
+        return room;
     }
 
-    public void updateRoom(int roomId, String name, String type, int capacity) {
+    public Room updateRoom(int roomId, String name, String type, int capacity) {
         Room room = roomRepository.findById(roomId).orElse(null);
         if (room == null) {
             System.out.println("Room edit failed");
-            return;
+            return null;
         }
         room.updateDetails(name, type, capacity);
         roomRepository.save(room);
         System.out.println("Room edit completed");
+        return room;
     }
 
     public Room getRoom(int roomId) {

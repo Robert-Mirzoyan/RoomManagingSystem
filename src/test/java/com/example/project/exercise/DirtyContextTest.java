@@ -1,5 +1,6 @@
 package com.example.project.exercise;
 
+import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ class DirtyContextTest {
         }
     }
 
+    @Getter
     static class Counter {
         private int value = 0;
 
@@ -43,9 +45,6 @@ class DirtyContextTest {
             value++;
         }
 
-        public int getValue() {
-            return value;
-        }
     }
 }
 

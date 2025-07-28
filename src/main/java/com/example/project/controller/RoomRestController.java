@@ -3,14 +3,17 @@ package com.example.project.controller;
 import com.example.project.dto.RoomCreateDto;
 import com.example.project.dto.RoomReadDto;
 import com.example.project.service.RoomRestService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/room")
+@Validated
 public class RoomRestController {
 
     private final RoomRestService roomRestService;
@@ -43,7 +46,7 @@ public class RoomRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoomReadDto> updateRoomById(@PathVariable Integer id,  @RequestBody RoomCreateDto dto) {
+    public ResponseEntity<RoomReadDto> updateRoomById(@PathVariable Integer id,@Valid @RequestBody RoomCreateDto dto) {
         RoomReadDto createDto = roomRestService.updateRoomById(id, dto);
         if (createDto == null) {
             return ResponseEntity.notFound().build();
@@ -52,7 +55,7 @@ public class RoomRestController {
     }
 
     @PostMapping
-    public ResponseEntity<RoomReadDto> createRoom(@RequestBody RoomCreateDto dto) {
+    public ResponseEntity<RoomReadDto> createRoom(@Valid @RequestBody RoomCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomRestService.createRoom(dto));
     }
 }

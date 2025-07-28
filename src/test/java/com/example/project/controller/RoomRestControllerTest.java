@@ -3,6 +3,9 @@ package com.example.project.controller;
 import com.example.project.dto.RoomCreateDto;
 import com.example.project.dto.RoomReadDto;
 import com.example.project.service.RoomRestService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +13,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -26,6 +32,8 @@ class RoomRestControllerTest {
 
     @Autowired
     private RoomRestService mockService;
+
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @TestConfiguration
     static class TestConfig {
@@ -153,5 +161,37 @@ class RoomRestControllerTest {
         mockMvc.perform(delete("/api/room/100"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void invalidRoomName() {
+        RoomCreateDto dto = new RoomCreateDto();
+        dto.setName("invalid"); // starts lowercase
+        dto.setType("Lab");
+        dto.setCapacity(10);
+
+        Set<ConstraintViolation<RoomCreateDto>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void invalidRoom() throws Exception {
+        String json = """
+        {
+            "name": "invalid",
+            "type": "",
+            "capacity": -5
+        }
+        """;
+
+        mockMvc.perform(post("/api/room")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validation failed"))
+                .andExpect(jsonPath("$.errors.name").exists())
+                .andExpect(jsonPath("$.errors.type").exists())
+                .andExpect(jsonPath("$.errors.capacity").exists());
+    }
+
 }
 

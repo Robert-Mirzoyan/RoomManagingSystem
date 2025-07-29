@@ -4,12 +4,12 @@ import com.example.project.dto.RoomCreateDto;
 import com.example.project.dto.RoomReadDto;
 import com.example.project.service.RoomRestService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/room")
@@ -23,8 +23,8 @@ public class RoomRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RoomReadDto>> getAllRooms() {
-        return ResponseEntity.ok(roomRestService.getAllRooms());
+    public ResponseEntity<Page<RoomReadDto>> getAllRooms(Pageable pageable) {
+        return ResponseEntity.ok(roomRestService.getAllRooms(pageable));
     }
 
     @GetMapping("/{id}")
@@ -37,12 +37,12 @@ public class RoomRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RoomReadDto> deleteRoomById(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteRoomById(@PathVariable Integer id) {
         RoomReadDto dto = roomRestService.deleteRoom(id);
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(dto);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
@@ -57,5 +57,15 @@ public class RoomRestController {
     @PostMapping
     public ResponseEntity<RoomReadDto> createRoom(@Valid @RequestBody RoomCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomRestService.createRoom(dto));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Page<RoomReadDto>> filterRooms(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) int minCapacity,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(roomRestService.filterRooms(name, type, minCapacity, pageable));
     }
 }

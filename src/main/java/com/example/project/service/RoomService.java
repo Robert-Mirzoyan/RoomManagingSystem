@@ -2,8 +2,12 @@ package com.example.project.service;
 
 import com.example.project.repository.RoomRepository;
 import com.example.project.model.Room;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -54,5 +58,30 @@ public class RoomService {
 
     public List<Room> getAllRooms() {
         return roomRepository.findAll(Sort.by("id").ascending());
+    }
+
+    public Page<Room> getAllRooms(Pageable pageable) {
+        return roomRepository.findAll(pageable);
+    }
+
+    public Page<Room> filterRooms(String name, String type, Integer minCapacity, Pageable pageable) {
+        Specification<Room> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (name != null && !name.isBlank()) {
+                predicates.add(cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+            }
+
+            if (type != null && !type.isBlank()) {
+                predicates.add(cb.equal(root.get("type"), type));
+            }
+
+            if (minCapacity != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("capacity"), minCapacity));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return roomRepository.findAll(spec, pageable);
     }
 }

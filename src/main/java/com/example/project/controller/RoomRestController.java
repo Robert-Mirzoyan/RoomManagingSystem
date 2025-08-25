@@ -37,8 +37,8 @@ public class RoomRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRoomById(@PathVariable Integer id) {
-        RoomReadDto dto = roomRestService.deleteRoom(id);
+    public ResponseEntity<Void> deleteRoomById(@PathVariable Integer id, @RequestParam Integer userId) {
+        RoomReadDto dto = roomRestService.deleteRoom(id, userId);
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }

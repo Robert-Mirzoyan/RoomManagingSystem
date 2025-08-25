@@ -13,6 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -67,14 +70,16 @@ class RoomRestControllerTest {
                 new RoomReadDto(3, "C", "Lab", 30)
         );
 
-        Mockito.when(mockService.getAllRooms()).thenReturn(rooms);
+        Page<RoomReadDto> page = new PageImpl<>(rooms);
+
+        Mockito.when(mockService.getAllRooms(Mockito.any(Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/api/room"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[0].name").value("A"))
-                .andExpect(jsonPath("$[1].type").value("Lab"))
-                .andExpect(jsonPath("$[2].capacity").value(30));
+                .andExpect(jsonPath("$.content.length()").value(3))
+                .andExpect(jsonPath("$.content[0].name").value("A"))
+                .andExpect(jsonPath("$.content[1].type").value("Lab"))
+                .andExpect(jsonPath("$.content[2].capacity").value(30));
     }
 
     @Test
@@ -146,19 +151,18 @@ class RoomRestControllerTest {
     @Test
     void testDeleteRoomById() throws Exception {
         RoomReadDto dto = new RoomReadDto(1, "A", "Lab", 30);
-        Mockito.when(mockService.deleteRoom(1)).thenReturn(dto);
+        Mockito.when(mockService.deleteRoom(1, 301)).thenReturn(dto);
 
-        mockMvc.perform(delete("/api/room/1"))
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$.name").value("A"));
+        mockMvc.perform(delete("/api/room/1?userId=301"))
+                .andExpect(status().isNoContent());
     }
 
     @Test
     void testInvalidDeleteRoomById() throws Exception {
         RoomReadDto dto = new RoomReadDto(1, "A", "Lab", 30);
-        Mockito.when(mockService.deleteRoom(1)).thenReturn(dto);
+        Mockito.when(mockService.deleteRoom(1,301)).thenReturn(dto);
 
-        mockMvc.perform(delete("/api/room/100"))
+        mockMvc.perform(delete("/api/room/100?userId=301"))
                 .andExpect(status().isNotFound());
     }
 

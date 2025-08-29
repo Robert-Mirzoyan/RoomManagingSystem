@@ -1,4 +1,4 @@
-package com.example.project.userForSubmoduleIntegrationTask.dto;
+package com.example.project.dto;
 
 import com.example.project.model.User;
 import lombok.AllArgsConstructor;
@@ -15,6 +15,7 @@ public class UserDto {
     private String email;
     private String role;
 
+    @SuppressWarnings("unused")
     public static UserDto from(User u) {
         return new UserDto(u.getId(), u.getName(), u.getEmail(), u.getRole());
     }

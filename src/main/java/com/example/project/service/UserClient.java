@@ -1,6 +1,6 @@
 package com.example.project.service;
 
-import com.example.project.userForSubmoduleIntegrationTask.dto.UserDto;
+import com.example.project.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

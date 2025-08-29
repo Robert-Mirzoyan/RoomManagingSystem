@@ -1,0 +1,97 @@
+networks:
+  appnet:
+
+services:
+  discovery-server:
+    build: ./discovery-server
+    container_name: discovery_server
+    ports:
+      - "8761:8761"
+    networks: [appnet]
+
+  db:
+    image: postgres:15
+    container_name: my_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: rob
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: mydb
+    volumes:
+      - /Users/rmirzoyan/IdeaProjects/RoomManagingSystem/src/main/resources/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    networks: [appnet]
+
+  user-service:
+    build: ./userForSubmoduleIntegrationTask
+    container_name: user_service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: rob
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_INSTANCE_NON_SECURE_PORT: 8081
+    depends_on: [db, discovery-server]
+    networks: [appnet]
+
+  room-service:
+    build: ./RoomManagingSystem
+    container_name: room_service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: rob
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      USER_SERVICE_URL: http://user-service:8081
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+      EUREKA_CLIENT_FETCH_REGISTRY: "true"
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_INSTANCE_NON_SECURE_PORT: 8080
+    depends_on: [db, discovery-server, user-service]
+    networks: [appnet]
+    
+  room-service2:
+    build: ./RoomManagingSystem
+    container_name: room_service2
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: rob
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      USER_SERVICE_URL: http://user-service:8081
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+      EUREKA_CLIENT_FETCH_REGISTRY: "true"
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_INSTANCE_NON_SECURE_PORT: 8080
+    depends_on: [ db, discovery-server, user-service ]
+    networks: [ appnet ]
+
+  room-service3:
+    build: ./RoomManagingSystem
+    container_name: room_service3
+    ports:
+      - "8083:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: rob
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      USER_SERVICE_URL: http://user-service:8081
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+      EUREKA_CLIENT_FETCH_REGISTRY: "true"
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      EUREKA_INSTANCE_NON_SECURE_PORT: 8080
+    depends_on: [ db, discovery-server, user-service ]
+    networks: [ appnet ]

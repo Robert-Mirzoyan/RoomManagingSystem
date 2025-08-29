@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/room")
+@RequestMapping("/api")
 @Validated
 public class RoomRestController {
 

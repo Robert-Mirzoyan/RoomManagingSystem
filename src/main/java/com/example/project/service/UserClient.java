@@ -13,7 +13,7 @@ public class UserClient {
 
     public boolean isAdmin(int userId) {
         UserDto dto = userWebClient.get()
-                .uri("/users/{id}", userId)
+                .uri("/api/{id}", userId)
                 .retrieve()
                 .bodyToMono(UserDto.class)
                 .block();

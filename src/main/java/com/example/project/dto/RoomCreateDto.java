@@ -13,9 +13,6 @@ import lombok.Setter;
 @Setter
 public class RoomCreateDto {
 
-    @NotNull(message = "userId is required")
-    private int userId;
-
     @NotBlank(message = "Name must not be blank")
     @Size(max = 50, message = "Name must not exceed 50 characters")
     @ValidRoomName

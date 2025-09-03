@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,15 +37,17 @@ public class RoomRestController {
         return ResponseEntity.ok(dto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRoomById(@PathVariable Integer id, @RequestParam Integer userId) {
-        RoomReadDto dto = roomRestService.deleteRoom(id, userId);
+    public ResponseEntity<Void> deleteRoomById(@PathVariable Integer id) {
+        RoomReadDto dto = roomRestService.deleteRoom(id);
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<RoomReadDto> updateRoomById(@PathVariable Integer id,@Valid @RequestBody RoomCreateDto dto) {
         RoomReadDto createDto = roomRestService.updateRoomById(id, dto);
@@ -54,6 +57,7 @@ public class RoomRestController {
         return ResponseEntity.ok(createDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<RoomReadDto> createRoom(@Valid @RequestBody RoomCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomRestService.createRoom(dto));

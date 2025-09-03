@@ -51,14 +51,14 @@ class RoomRestControllerTest {
         RoomReadDto dto = new RoomReadDto(1, "A", "Lab", 30);
         Mockito.when(mockService.getRoomById(1)).thenReturn(dto);
 
-        mockMvc.perform(get("/api/room/1"))
+        mockMvc.perform(get("/api/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("A"));
     }
 
     @Test
     void testGetRoomByInvalidId() throws Exception {
-        mockMvc.perform(get("/api/room/100"))
+        mockMvc.perform(get("/api/100"))
                 .andExpect(status().isNotFound());
     }
 
@@ -74,7 +74,7 @@ class RoomRestControllerTest {
 
         Mockito.when(mockService.getAllRooms(Mockito.any(Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/api/room"))
+        mockMvc.perform(get("/api"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(3))
                 .andExpect(jsonPath("$.content[0].name").value("A"))
@@ -96,7 +96,7 @@ class RoomRestControllerTest {
         }
         """;
 
-        mockMvc.perform(post("/api/room")
+        mockMvc.perform(post("/api")
                         .contentType("application/json")
                         .content(requestJson))
                 .andExpect(status().isCreated())
@@ -119,7 +119,7 @@ class RoomRestControllerTest {
         }
         """;
 
-        mockMvc.perform(put("/api/room/1")
+        mockMvc.perform(put("/api/1")
                         .contentType("application/json")
                         .content(requestJson))
                 .andExpect(status().isOk())
@@ -142,7 +142,7 @@ class RoomRestControllerTest {
         }
         """;
 
-        mockMvc.perform(put("/api/room/100")
+        mockMvc.perform(put("/api/100")
                         .contentType("application/json")
                         .content(requestJson))
                 .andExpect(status().isNotFound());
@@ -151,16 +151,16 @@ class RoomRestControllerTest {
     @Test
     void testDeleteRoomById() throws Exception {
         RoomReadDto dto = new RoomReadDto(1, "A", "Lab", 30);
-        Mockito.when(mockService.deleteRoom(1, 301)).thenReturn(dto);
+        Mockito.when(mockService.deleteRoom(1)).thenReturn(dto);
 
-        mockMvc.perform(delete("/api/room/1?userId=301"))
+        mockMvc.perform(delete("/api/1"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void testInvalidDeleteRoomById() throws Exception {
         RoomReadDto dto = new RoomReadDto(1, "A", "Lab", 30);
-        Mockito.when(mockService.deleteRoom(1,301)).thenReturn(dto);
+        Mockito.when(mockService.deleteRoom(1)).thenReturn(dto);
 
         mockMvc.perform(delete("/api/room/100?userId=301"))
                 .andExpect(status().isNotFound());
@@ -187,7 +187,7 @@ class RoomRestControllerTest {
         }
         """;
 
-        mockMvc.perform(post("/api/room")
+        mockMvc.perform(post("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())

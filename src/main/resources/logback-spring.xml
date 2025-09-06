@@ -20,7 +20,20 @@
 
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>logstash:5001</destination>
-        <encoder class="net.logstash.logback.encoder.LoggingEventJsonEncoder"/>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <logLevel/>
+                <loggerName/>
+                <threadName/>
+                <message/>
+                <stackTrace/>
+                <mdc/>
+                <provider class="net.logstash.logback.composite.GlobalCustomFieldsJsonProvider">
+                    <customFields>{"service":"${appName}"}</customFields>
+                </provider>
+            </providers>
+        </encoder>
         <keepAliveDuration>60 seconds</keepAliveDuration>
         <reconnectionDelay>5 seconds</reconnectionDelay>
     </appender>

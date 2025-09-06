@@ -3,6 +3,13 @@ networks:
     driver: bridge
 
 services:
+  zipkin:
+    image: openzipkin/zipkin:2.24
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks: [ appnet ]
+
   prometheus:
     image: prom/prometheus:v2.54.1
     container_name: prometheus
